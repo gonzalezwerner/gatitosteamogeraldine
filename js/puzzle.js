@@ -1,5 +1,6 @@
 /**
- * puzzle.js - Motor de Rompecabezas con Tablero 100% Limpio desde Cero
+ * puzzle.js - Motor con Movilidad Total de Piezas:
+ * Permite cambiar, reajustar y mover cualquier pieza del tablero que no esté donde debe.
  */
 
 class RomanticCatPuzzle {
@@ -38,7 +39,7 @@ class RomanticCatPuzzle {
     // Solo 1 pista por partida
     this.hintsLeft = 1;
 
-    // Clave de almacenamiento de 700 piezas limpia
+    // Claves de guardado
     this.storageKey = 'gatitos_geraldine_700_v1';
 
     // Cámara y Zoom
@@ -65,7 +66,6 @@ class RomanticCatPuzzle {
     this.hintsLeft = 1;
     this.isCompleted = false;
     
-    // Reiniciar todas las piezas al estado inicial limpio
     this.pieces.forEach(p => {
       p.currentX = -999;
       p.currentY = -999;
@@ -77,18 +77,13 @@ class RomanticCatPuzzle {
     this.resetCamera();
     this.resize();
 
-    // Limpiar claves antiguas de versiones anteriores
-    try {
-      localStorage.removeItem('gatitos_realistic_save');
-      localStorage.removeItem('gatitos_save');
-      localStorage.removeItem('gatitos_game_save');
-      if (isReset) {
+    if (isReset) {
+      try {
         localStorage.removeItem(this.storageKey);
-      } else {
-        this.loadProgress();
-      }
-    } catch (e) {
-      console.warn("Storage error", e);
+        localStorage.removeItem('gatitos_realistic_save');
+      } catch (e) {}
+    } else {
+      this.loadProgress();
     }
 
     const placed = this.getPlacedCount();
@@ -293,24 +288,16 @@ class RomanticCatPuzzle {
 
     const viewBounds = this.getViewportWorldBounds();
 
-    // 1. Piezas colocadas (fijas)
+    // 1. Dibujar piezas en el tablero que no son la seleccionada
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
-      if (!p.isPlaced || p === this.selectedPiece) continue;
+      if (p.currentX < -100 || p === this.selectedPiece) continue;
       if (p.currentX < viewBounds.left || p.currentX > viewBounds.right || p.currentY < viewBounds.top || p.currentY > viewBounds.bottom) continue;
       this.drawRealCatPiece(ctx, p, p.currentX, p.currentY, p.currentAngle, p.currentFlipped, false);
     }
 
-    // 2. Piezas activas sueltas en el tablero
-    for (let i = 0; i < this.pieces.length; i++) {
-      const p = this.pieces[i];
-      if (p.isPlaced || p.currentX < -100 || p === this.selectedPiece) continue;
-      if (p.currentX < viewBounds.left || p.currentX > viewBounds.right || p.currentY < viewBounds.top || p.currentY > viewBounds.bottom) continue;
-      this.drawRealCatPiece(ctx, p, p.currentX, p.currentY, p.currentAngle, p.currentFlipped, false);
-    }
-
-    // 3. Pieza seleccionada activa
-    if (this.selectedPiece && !this.selectedPiece.isPlaced) {
+    // 2. Pieza seleccionada activa (se dibuja siempre arriba con borde dorado brillante)
+    if (this.selectedPiece) {
       this.drawRealCatPiece(
         ctx,
         this.selectedPiece,
@@ -356,7 +343,7 @@ class RomanticCatPuzzle {
       ctx.strokeStyle = '#ffd689';
       ctx.lineWidth = 3.2;
     } else {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+      ctx.strokeStyle = piece.isPlaced ? 'rgba(255, 255, 255, 0.3)' : 'rgba(255, 117, 160, 0.6)';
       ctx.lineWidth = 1.2;
     }
     ctx.stroke();
@@ -386,8 +373,8 @@ class RomanticCatPuzzle {
 
       let hitPiece = null;
 
-      // 1. Detección en PÍXELES DE PANTALLA (Screen-Space):
-      if (this.selectedPiece && !this.selectedPiece.isPlaced && this.selectedPiece.currentX > -100) {
+      // 1. Prioridad: Si ya hay una pieza seleccionada y tocamos cerca de ella en pantalla
+      if (this.selectedPiece && this.selectedPiece.currentX > -100) {
         const screenPt = this.worldToScreen(this.selectedPiece.currentX, this.selectedPiece.currentY);
         const distScreen = Math.hypot(clientX - screenPt.x, clientY - screenPt.y);
         if (distScreen <= 58) {
@@ -395,11 +382,11 @@ class RomanticCatPuzzle {
         }
       }
 
-      // 2. Buscar entre piezas no colocadas en pantalla
+      // 2. Buscar entre TODAS las piezas presentes en el tablero (permite cambiar o mover cualquier pieza)
       if (!hitPiece) {
         for (let i = this.pieces.length - 1; i >= 0; i--) {
           const p = this.pieces[i];
-          if (!p.isPlaced && p.currentX > -100) {
+          if (p.currentX > -100) {
             const screenPt = this.worldToScreen(p.currentX, p.currentY);
             const distScreen = Math.hypot(clientX - screenPt.x, clientY - screenPt.y);
             if (distScreen <= 52) {
@@ -410,8 +397,8 @@ class RomanticCatPuzzle {
         }
       }
 
-      // 3. Si hay una pieza seleccionada y tocamos el lienzo, acoplarla al dedo
-      if (!hitPiece && this.selectedPiece && !this.selectedPiece.isPlaced) {
+      // 3. Si hay una pieza seleccionada y tocamos en cualquier parte del tablero, acoplarla al dedo
+      if (!hitPiece && this.selectedPiece) {
         hitPiece = this.selectedPiece;
         this.selectedPiece.currentX = worldPos.x;
         this.selectedPiece.currentY = worldPos.y;
@@ -456,12 +443,22 @@ class RomanticCatPuzzle {
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-      if (this.isDragging && this.selectedPiece && !this.selectedPiece.isPlaced) {
+      if (this.isDragging && this.selectedPiece) {
         const worldPos = this.screenToWorld(clientX, clientY);
         this.selectedPiece.currentX = worldPos.x - this.dragOffset.x;
         this.selectedPiece.currentY = worldPos.y - this.dragOffset.y;
 
+        // Si se mueve lejos de su silueta correcta, actualizar su estado
         const distToTarget = Math.hypot(this.selectedPiece.currentX - this.selectedPiece.targetX, this.selectedPiece.currentY - this.selectedPiece.targetY);
+        if (distToTarget > this.snapToleranceDist && this.selectedPiece.isPlaced) {
+          this.selectedPiece.isPlaced = false;
+          this.drawBoard();
+          if (this.onProgressUpdate) {
+            this.onProgressUpdate(this.getPlacedCount(), this.pieces.length);
+          }
+        }
+
+        // Asistencia magnética suave cuando se aproxima a la silueta correcta
         if (distToTarget < 24 && this.selectedPiece.currentAngle === this.selectedPiece.targetAngle) {
           this.selectedPiece.currentX += (this.selectedPiece.targetX - this.selectedPiece.currentX) * 0.35;
           this.selectedPiece.currentY += (this.selectedPiece.targetY - this.selectedPiece.currentY) * 0.35;
@@ -480,9 +477,16 @@ class RomanticCatPuzzle {
 
     const handlePointerUp = () => {
       this.initialPinchDist = null;
-      if (this.selectedPiece && this.isDragging && !this.selectedPiece.isPlaced) {
+      if (this.selectedPiece && this.isDragging) {
         this.isDragging = false;
-        this.trySnapPiece(this.selectedPiece);
+        const snapped = this.trySnapPiece(this.selectedPiece);
+        if (!snapped && this.selectedPiece.isPlaced) {
+          this.selectedPiece.isPlaced = false;
+          this.drawBoard();
+          if (this.onProgressUpdate) {
+            this.onProgressUpdate(this.getPlacedCount(), this.pieces.length);
+          }
+        }
       }
       this.isDragging = false;
       this.isPanning = false;
@@ -496,9 +500,10 @@ class RomanticCatPuzzle {
     window.addEventListener('touchmove', handlePointerMove, { passive: false });
     window.addEventListener('touchend', handlePointerUp, { passive: false });
 
+    // Doble toque rápido para rotar
     canvas.addEventListener('click', () => {
       const now = Date.now();
-      if (now - this.lastTapTime < 320 && this.selectedPiece && !this.selectedPiece.isPlaced) {
+      if (now - this.lastTapTime < 320 && this.selectedPiece) {
         this.rotateSelectedPiece(45);
       }
       this.lastTapTime = now;
@@ -506,7 +511,7 @@ class RomanticCatPuzzle {
 
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
-      if (e.ctrlKey || e.metaKey || !this.selectedPiece || this.selectedPiece.isPlaced) {
+      if (e.ctrlKey || e.metaKey || !this.selectedPiece) {
         if (e.deltaY < 0) this.zoomIn();
         else this.zoomOut();
       } else {
@@ -527,8 +532,6 @@ class RomanticCatPuzzle {
     const piece = this.pieces.find(p => p.id === pieceId);
     if (!piece) return;
 
-    if (piece.isPlaced) return;
-
     const bounds = this.getViewportWorldBounds();
     piece.currentX = (bounds.left + bounds.right) / 2;
     piece.currentY = (bounds.top + bounds.bottom) / 2;
@@ -539,7 +542,7 @@ class RomanticCatPuzzle {
   }
 
   rotateSelectedPiece(deltaAngle = 45) {
-    if (!this.selectedPiece || this.selectedPiece.isPlaced) return;
+    if (!this.selectedPiece) return;
     this.selectedPiece.currentAngle = (this.selectedPiece.currentAngle + deltaAngle + 360) % 360;
     if (this.audio) this.audio.playSparkle(720);
     if (navigator.vibrate) navigator.vibrate(8);
@@ -547,7 +550,7 @@ class RomanticCatPuzzle {
   }
 
   flipSelectedPiece() {
-    if (!this.selectedPiece || this.selectedPiece.isPlaced) return;
+    if (!this.selectedPiece) return;
     this.selectedPiece.currentFlipped = !this.selectedPiece.currentFlipped;
     if (this.audio) this.audio.playSparkle(800);
     if (navigator.vibrate) navigator.vibrate(12);
@@ -555,13 +558,12 @@ class RomanticCatPuzzle {
   }
 
   trySnapPiece(piece) {
-    if (piece.isPlaced) return true;
-
     const dist = Math.hypot(piece.currentX - piece.targetX, piece.currentY - piece.targetY);
     const angleDiff = Math.abs((piece.currentAngle - piece.targetAngle + 360) % 360);
     const flipMatches = (piece.currentFlipped === piece.targetFlipped);
 
     if (dist <= this.snapToleranceDist && (angleDiff <= this.snapToleranceAngle || angleDiff >= 360 - this.snapToleranceAngle) && flipMatches) {
+      // Encaje exacto en la posición objetivo
       piece.currentX = piece.targetX;
       piece.currentY = piece.targetY;
       piece.currentAngle = piece.targetAngle;
@@ -709,7 +711,8 @@ class RomanticCatPuzzle {
 
   loadProgress() {
     try {
-      const raw = localStorage.getItem(this.storageKey);
+      let raw = localStorage.getItem(this.storageKey);
+      if (!raw) raw = localStorage.getItem('gatitos_realistic_save');
       if (!raw) return false;
       const saveData = JSON.parse(raw);
 
@@ -723,12 +726,16 @@ class RomanticCatPuzzle {
       if (Array.isArray(saveData.placedPieces)) {
         saveData.placedPieces.forEach(saved => {
           const p = this.pieces.find(item => item.id === saved.id);
-          if (p && saved.isPlaced) {
-            p.isPlaced = true;
+          if (p && saved.currentX > -100) {
             p.currentX = saved.currentX;
             p.currentY = saved.currentY;
             p.currentAngle = saved.currentAngle;
             p.currentFlipped = saved.currentFlipped;
+
+            // Verificar si verdaderamente está colocada en su posición objetivo
+            const dist = Math.hypot(p.currentX - p.targetX, p.currentY - p.targetY);
+            const angleMatches = (p.currentAngle === p.targetAngle);
+            p.isPlaced = (dist <= this.snapToleranceDist && angleMatches);
           }
         });
       }
