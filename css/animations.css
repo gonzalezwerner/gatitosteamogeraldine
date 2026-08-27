@@ -1,0 +1,115 @@
+/* CSS Keyframe Animations for Romantic Cat Puzzle */
+
+@keyframes pulseBeat {
+  0% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.18);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.12);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fallSakura {
+  0% {
+    opacity: 0;
+    top: -10%;
+    transform: translateX(0) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+  }
+  10% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+    top: 110%;
+    transform: translateX(120px) rotateX(360deg) rotateY(180deg) rotateZ(360deg);
+  }
+}
+
+.sakura-petal {
+  position: absolute;
+  background: radial-gradient(circle at 30% 30%, #ffb7c5, #ff69b4);
+  border-radius: 50% 0 50% 50%;
+  pointer-events: none;
+  filter: drop-shadow(0 0 4px rgba(255, 105, 180, 0.4));
+  animation: fallSakura linear infinite;
+}
+
+@keyframes romanticGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(255, 77, 141, 0.4), 0 0 30px rgba(249, 214, 137, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(255, 77, 141, 0.8), 0 0 45px rgba(249, 214, 137, 0.5);
+  }
+}
+
+@keyframes borderSparkle {
+  0% {
+    border-color: rgba(255, 117, 160, 0.3);
+  }
+  50% {
+    border-color: rgba(249, 214, 137, 0.8);
+  }
+  100% {
+    border-color: rgba(255, 117, 160, 0.3);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes heartBurstRipple {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.heart-ripple-wave {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-accent);
+  pointer-events: none;
+  animation: heartBurstRipple 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes shimmerText {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer-text {
+  background: linear-gradient(90deg, #fff 0%, #ffd689 50%, #fff 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerText 3s infinite linear;
+}
