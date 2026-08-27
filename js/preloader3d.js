@@ -44,27 +44,19 @@ class Romantic3DPreloader {
     const width = window.innerWidth;
     const height = window.innerHeight;
 
-    // 1. Escena & Cámara
     this.scene = new THREE.Scene();
     this.camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 2000);
     this.camera.position.z = 280;
 
-    // 2. Renderizador WebGL
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     this.renderer.setSize(width, height);
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.canvasContainer.appendChild(this.renderer.domElement);
 
-    // 3. Crear Nebulosa del Corazón 3D (3000 partículas en forma de corazón)
     this.create3DHeartNebula();
-
-    // 4. Crear Espiral de Galaxia Cósmica (2000 estrellas)
     this.create3DGalaxy();
-
-    // 5. Crear Pétalos de Sakura Espaciales en 3D
     this.create3DSakura();
 
-    // Parallax con movimiento de ratón o inclinación
     this.mouseX = 0;
     this.mouseY = 0;
     window.addEventListener('mousemove', (e) => {
@@ -98,13 +90,12 @@ class Romantic3DPreloader {
     const positions = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
 
-    const c1 = new THREE.Color('#ff4d8d'); // Rosa romántico
-    const c2 = new THREE.Color('#ffd689'); // Oro celestial
-    const c3 = new THREE.Color('#c084fc'); // Violeta aurora
+    const c1 = new THREE.Color('#ff4d8d');
+    const c2 = new THREE.Color('#ffd689');
+    const c3 = new THREE.Color('#c084fc');
 
     for (let i = 0; i < particleCount; i++) {
       const t = Math.random() * Math.PI * 2;
-      // Ecuación 3D del corazón
       const scale = 5.2 + Math.random() * 1.8;
       const hx = (16 * Math.pow(Math.sin(t), 3)) * scale;
       const hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t)) * scale;
@@ -222,9 +213,13 @@ class Romantic3DPreloader {
         if (this.captionText) this.captionText.innerHTML = `✨ ¡Todo listo con amor para <strong>Geraldine</strong>! 🐾💖`;
         if (this.btnEnter) {
           this.btnEnter.classList.add('visible');
-          this.btnEnter.addEventListener('click', () => this.dismiss());
-        } else {
-          setTimeout(() => this.dismiss(), 1000);
+          this.btnEnter.addEventListener('pointerdown', (e) => {
+            e.stopPropagation();
+            this.dismiss();
+          });
+        }
+        if (this.container) {
+          this.container.addEventListener('pointerdown', () => this.dismiss(), { once: true });
         }
       }
     }, 120);
@@ -239,7 +234,6 @@ class Romantic3DPreloader {
 
     const time = Date.now() * 0.001;
 
-    // Rotación del corazón cósmico y pulsación de latido
     if (this.heartPoints) {
       this.heartPoints.rotation.y = time * 0.2 + this.mouseX * 2;
       this.heartPoints.rotation.x = Math.sin(time * 0.3) * 0.15 + this.mouseY * 2;
@@ -248,12 +242,10 @@ class Romantic3DPreloader {
       this.heartPoints.scale.set(beat, beat, beat);
     }
 
-    // Rotación de la galaxia
     if (this.galaxyPoints) {
       this.galaxyPoints.rotation.z = time * 0.08;
     }
 
-    // Movimiento flotante de pétalos de sakura espaciales
     if (this.sakuraPoints) {
       const pos = this.sakuraPoints.geometry.attributes.position.array;
       for (let i = 0; i < pos.length; i += 3) {
@@ -270,11 +262,12 @@ class Romantic3DPreloader {
 
   dismiss() {
     if (this.container) {
+      this.container.style.pointerEvents = 'none';
       this.container.classList.add('fade-out');
+      if (this.onComplete) this.onComplete();
       setTimeout(() => {
         if (this.animId) cancelAnimationFrame(this.animId);
         this.container.style.display = 'none';
-        if (this.onComplete) this.onComplete();
       }, 700);
     }
   }
