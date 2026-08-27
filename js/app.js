@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador para Geraldine con Preloader 3D de Three.js
+ * app.js - Orquestador para Geraldine con Preloader 3D de Three.js y Tablero Limpio
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -93,12 +93,15 @@ document.addEventListener('DOMContentLoaded', () => {
     buildTray(MASTER_LEVEL.pieces);
   };
 
-  // 3. Iniciar Partida
+  // 3. Iniciar Partida (Tablero Limpio)
   function initGame(isReset = false) {
     if (isReset) {
-      localStorage.removeItem('gatitos_realistic_save');
+      try {
+        localStorage.removeItem('gatitos_geraldine_700_v1');
+        localStorage.removeItem('gatitos_realistic_save');
+      } catch (e) {}
     }
-    puzzle.loadLevel(MASTER_LEVEL);
+    puzzle.loadLevel(MASTER_LEVEL, isReset);
     buildTray(MASTER_LEVEL.pieces);
     puzzle.updateHintButtonUI();
     pieceControlsOverlay.classList.remove('visible');
@@ -265,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnRestart.addEventListener('click', () => {
     unlockAudio();
-    if (confirm("¿Deseas reiniciar el mosaico y comenzar de nuevo?")) {
+    if (confirm("¿Deseas reiniciar el mosaico y comenzar de nuevo desde 0?")) {
       initGame(true);
     }
   });
@@ -316,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Tips de gestos rotativos dedicados
+  // Tips de gestos rotativos
   const gestureTips = [
     { icon: "💖", text: "Para Geraldine con todo mi amor eterno" },
     { icon: "🤏", text: "Pellizca con 2 dedos para hacer Zoom" },
@@ -344,6 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
     deviceContainer.classList.add('iphone-framed');
   }
 
-  // Iniciar juego
+  // Iniciar juego limpio desde cero
   initGame(false);
 });

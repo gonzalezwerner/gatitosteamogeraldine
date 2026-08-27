@@ -1,6 +1,5 @@
 /**
- * puzzle.js - Motor con Detección Táctil en Píxeles de Pantalla (Screen-Space Hitbox)
- * Permite agarrar y seleccionar piezas con extrema facilidad en iPhone a cualquier nivel de zoom.
+ * puzzle.js - Motor de Rompecabezas con Tablero 100% Limpio desde Cero
  */
 
 class RomanticCatPuzzle {
@@ -39,6 +38,9 @@ class RomanticCatPuzzle {
     // Solo 1 pista por partida
     this.hintsLeft = 1;
 
+    // Clave de almacenamiento de 700 piezas limpia
+    this.storageKey = 'gatitos_geraldine_700_v1';
+
     // Cámara y Zoom
     this.cameraZoom = 1;
     this.cameraPanX = 0;
@@ -57,12 +59,13 @@ class RomanticCatPuzzle {
     requestAnimationFrame(this.renderLoop);
   }
 
-  loadLevel(levelData) {
+  loadLevel(levelData, isReset = false) {
     this.boardBaseSize = levelData.boardSize || 1200;
     this.pieces = JSON.parse(JSON.stringify(levelData.pieces));
     this.hintsLeft = 1;
     this.isCompleted = false;
     
+    // Reiniciar todas las piezas al estado inicial limpio
     this.pieces.forEach(p => {
       p.currentX = -999;
       p.currentY = -999;
@@ -74,7 +77,19 @@ class RomanticCatPuzzle {
     this.resetCamera();
     this.resize();
 
-    this.loadProgress();
+    // Limpiar claves antiguas de versiones anteriores
+    try {
+      localStorage.removeItem('gatitos_realistic_save');
+      localStorage.removeItem('gatitos_save');
+      localStorage.removeItem('gatitos_game_save');
+      if (isReset) {
+        localStorage.removeItem(this.storageKey);
+      } else {
+        this.loadProgress();
+      }
+    } catch (e) {
+      console.warn("Storage error", e);
+    }
 
     const placed = this.getPlacedCount();
     this.isCompleted = (placed === this.pieces.length);
@@ -372,7 +387,6 @@ class RomanticCatPuzzle {
       let hitPiece = null;
 
       // 1. Detección en PÍXELES DE PANTALLA (Screen-Space):
-      // Permite tocar cómodamente cualquier pieza sin importar el nivel de zoom (radio táctil generoso de 55px en pantalla)
       if (this.selectedPiece && !this.selectedPiece.isPlaced && this.selectedPiece.currentX > -100) {
         const screenPt = this.worldToScreen(this.selectedPiece.currentX, this.selectedPiece.currentY);
         const distScreen = Math.hypot(clientX - screenPt.x, clientY - screenPt.y);
@@ -381,7 +395,7 @@ class RomanticCatPuzzle {
         }
       }
 
-      // 2. Buscar entre todas las piezas activas en el tablero en píxeles de pantalla
+      // 2. Buscar entre piezas no colocadas en pantalla
       if (!hitPiece) {
         for (let i = this.pieces.length - 1; i >= 0; i--) {
           const p = this.pieces[i];
@@ -396,7 +410,7 @@ class RomanticCatPuzzle {
         }
       }
 
-      // 3. Si ya tenemos una pieza seleccionada y tocamos la pantalla, moverla inmediatamente bajo el dedo
+      // 3. Si hay una pieza seleccionada y tocamos el lienzo, acoplarla al dedo
       if (!hitPiece && this.selectedPiece && !this.selectedPiece.isPlaced) {
         hitPiece = this.selectedPiece;
         this.selectedPiece.currentX = worldPos.x;
@@ -482,7 +496,6 @@ class RomanticCatPuzzle {
     window.addEventListener('touchmove', handlePointerMove, { passive: false });
     window.addEventListener('touchend', handlePointerUp, { passive: false });
 
-    // Doble toque rápido para rotar
     canvas.addEventListener('click', () => {
       const now = Date.now();
       if (now - this.lastTapTime < 320 && this.selectedPiece && !this.selectedPiece.isPlaced) {
@@ -516,7 +529,6 @@ class RomanticCatPuzzle {
 
     if (piece.isPlaced) return;
 
-    // Colocarla en el centro visible del viewport
     const bounds = this.getViewportWorldBounds();
     piece.currentX = (bounds.left + bounds.right) / 2;
     piece.currentY = (bounds.top + bounds.bottom) / 2;
@@ -685,7 +697,7 @@ class RomanticCatPuzzle {
           currentFlipped: p.currentFlipped
         }))
       };
-      localStorage.setItem('gatitos_realistic_save', JSON.stringify(saveData));
+      localStorage.setItem(this.storageKey, JSON.stringify(saveData));
       if (showToast) {
         this.triggerRomanticWhisper("💌 ¡Progreso guardado con éxito!");
         if (this.audio) this.audio.playSparkle(880);
@@ -697,7 +709,7 @@ class RomanticCatPuzzle {
 
   loadProgress() {
     try {
-      const raw = localStorage.getItem('gatitos_realistic_save');
+      const raw = localStorage.getItem(this.storageKey);
       if (!raw) return false;
       const saveData = JSON.parse(raw);
 
