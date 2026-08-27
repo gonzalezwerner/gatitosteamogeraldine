@@ -1,5 +1,6 @@
 /**
- * puzzle.js - Motor con Arrastre Ultra Fácil, Gran Tolerancia Táctil y Encaje Magnético Suave
+ * puzzle.js - Motor de 700 Piezas con Bloqueo Permanente de Piezas Encajadas
+ * Las piezas colocadas quedan fijas en el tablero y no se desarman al tocarlas.
  */
 
 class RomanticCatPuzzle {
@@ -26,7 +27,7 @@ class RomanticCatPuzzle {
     this.lastTapTime = 0;
     this.isCompleted = false;
 
-    // Carga de la fotografía real de los gatitos
+    // Fotografía real de los gatitos
     this.catImage = new Image();
     this.catImageLoaded = false;
     this.catImage.src = 'img/romantic_cats.jpg';
@@ -47,9 +48,9 @@ class RomanticCatPuzzle {
     this.initialPinchDist = null;
     this.initialPinchZoom = 1;
 
-    // Encaje Magnético Generoso y Fácil
-    this.snapToleranceDist = 56;   // Aumentado para encaje suave sin esfuerzo
-    this.snapToleranceAngle = 32;  // Mayor tolerancia de ángulo
+    // Tolerancia de encaje magnético
+    this.snapToleranceDist = 48;
+    this.snapToleranceAngle = 30;
 
     this.setupEvents();
     this.renderLoop = this.renderLoop.bind(this);
@@ -152,7 +153,7 @@ class RomanticCatPuzzle {
     const top = (0 - (ch / 2 + this.cameraPanY)) / effScale + this.boardBaseSize / 2;
     const width = cw / effScale;
     const height = ch / effScale;
-    return { left: left - 50, top: top - 50, right: left + width + 50, bottom: top + height + 50 };
+    return { left: left - 40, top: top - 40, right: left + width + 40, bottom: top + height + 40 };
   }
 
   drawBackgroundArtwork() {
@@ -163,7 +164,6 @@ class RomanticCatPuzzle {
     ctx.save();
     this.applyCameraTransform(ctx);
 
-    // Fondo cósmico del tablero
     const skyGrad = ctx.createLinearGradient(0, 0, 0, 1200);
     skyGrad.addColorStop(0, '#0d0418');
     skyGrad.addColorStop(0.5, '#160824');
@@ -171,7 +171,6 @@ class RomanticCatPuzzle {
     ctx.fillStyle = skyGrad;
     ctx.fillRect(0, 0, 1200, 1200);
 
-    // Estrellas
     ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
     const starCoords = [
       [150, 120], [320, 90], [880, 110], [1050, 160], [120, 350], [1080, 380],
@@ -204,8 +203,8 @@ class RomanticCatPuzzle {
     ctx.strokeRect(8, 8, 1184, 1184);
 
     const viewBounds = this.getViewportWorldBounds();
-    ctx.lineWidth = 1.2;
-    ctx.strokeStyle = 'rgba(255, 117, 160, 0.28)';
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(255, 117, 160, 0.25)';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
 
     for (let i = 0; i < this.pieces.length; i++) {
@@ -233,7 +232,7 @@ class RomanticCatPuzzle {
       } else if (p.isHinted) {
         ctx.fillStyle = 'rgba(249, 214, 137, 0.4)';
         ctx.strokeStyle = '#f9d689';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.stroke();
         ctx.fill();
       } else {
@@ -256,7 +255,7 @@ class RomanticCatPuzzle {
 
     const viewBounds = this.getViewportWorldBounds();
 
-    // 1. Piezas colocadas
+    // 1. Piezas colocadas (fijas)
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
       if (!p.isPlaced || p === this.selectedPiece) continue;
@@ -264,7 +263,7 @@ class RomanticCatPuzzle {
       this.drawRealCatPiece(ctx, p, p.currentX, p.currentY, p.currentAngle, p.currentFlipped, false);
     }
 
-    // 2. Piezas activas sueltas en el tablero
+    // 2. Piezas activas sueltas en el tablero (no colocadas)
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
       if (p.isPlaced || p.currentX < -100 || p === this.selectedPiece) continue;
@@ -272,8 +271,8 @@ class RomanticCatPuzzle {
       this.drawRealCatPiece(ctx, p, p.currentX, p.currentY, p.currentAngle, p.currentFlipped, false);
     }
 
-    // 3. Pieza seleccionada (dibujada al final encima de todas)
-    if (this.selectedPiece) {
+    // 3. Pieza seleccionada activa
+    if (this.selectedPiece && !this.selectedPiece.isPlaced) {
       this.drawRealCatPiece(
         ctx,
         this.selectedPiece,
@@ -315,13 +314,12 @@ class RomanticCatPuzzle {
     }
     ctx.restore();
 
-    // Sombra y halo suave al seleccionar para máxima visibilidad táctil
     if (isSelected) {
       ctx.strokeStyle = '#ffd689';
-      ctx.lineWidth = 3.2;
+      ctx.lineWidth = 2.8;
     } else {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-      ctx.lineWidth = 1.2;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 1.0;
     }
     ctx.stroke();
 
@@ -345,7 +343,6 @@ class RomanticCatPuzzle {
     };
 
     const handlePointerDown = (e) => {
-      // Detección de Pinch-to-zoom (2 dedos)
       if (e.touches && e.touches.length === 2) {
         this.isDragging = false;
         this.isPanning = true;
@@ -364,19 +361,20 @@ class RomanticCatPuzzle {
 
       let hitPiece = null;
 
-      // 1. Prioridad: Si ya hay una pieza seleccionada y tocamos cerca de ella (área táctil amplia de 65px)
-      if (this.selectedPiece && this.selectedPiece.currentX > -100) {
+      // 1. Prioridad: Si hay una pieza seleccionada y NO está colocada
+      if (this.selectedPiece && !this.selectedPiece.isPlaced && this.selectedPiece.currentX > -100) {
         const dist = Math.hypot(pos.x - this.selectedPiece.currentX, pos.y - this.selectedPiece.currentY);
-        if (dist <= 65) {
+        if (dist <= 50) {
           hitPiece = this.selectedPiece;
         }
       }
 
-      // 2. Si no, buscar entre todas las piezas activas en el tablero con radio generoso
+      // 2. Buscar únicamente entre piezas NO colocadas (!p.isPlaced)
+      // Las piezas ya colocadas quedan bloqueadas fijas en el tablero
       if (!hitPiece) {
         for (let i = this.pieces.length - 1; i >= 0; i--) {
           const p = this.pieces[i];
-          if (p.currentX > -100 && this.isPointInPieceGenerous(pos.x, pos.y, p)) {
+          if (!p.isPlaced && p.currentX > -100 && this.isPointInPieceGenerous(pos.x, pos.y, p)) {
             hitPiece = p;
             break;
           }
@@ -390,20 +388,9 @@ class RomanticCatPuzzle {
         this.dragOffset.x = pos.x - hitPiece.currentX;
         this.dragOffset.y = pos.y - hitPiece.currentY;
 
-        if (hitPiece.isPlaced) {
-          hitPiece.isPlaced = false;
-          this.isCompleted = false;
-          this.drawBackgroundArtwork();
-          this.drawBoard();
-          if (this.onProgressUpdate) {
-            this.onProgressUpdate(this.getPlacedCount(), this.pieces.length);
-          }
-        }
-
         if (this.audio) this.audio.playMew();
         if (navigator.vibrate) navigator.vibrate(10);
       } else {
-        // Tocar el fondo inicia paneo de cámara
         this.isPanning = true;
         this.panStart.x = clientX;
         this.panStart.y = clientY;
@@ -433,17 +420,15 @@ class RomanticCatPuzzle {
       const clientX = e.touches ? e.touches[0].clientX : e.clientX;
       const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-      if (this.isDragging && this.selectedPiece) {
+      if (this.isDragging && this.selectedPiece && !this.selectedPiece.isPlaced) {
         const pos = screenToWorld(clientX, clientY);
         this.selectedPiece.currentX = pos.x - this.dragOffset.x;
         this.selectedPiece.currentY = pos.y - this.dragOffset.y;
 
-        // Auto-asistencia magnética en tiempo real al acercarse al objetivo
         const distToTarget = Math.hypot(this.selectedPiece.currentX - this.selectedPiece.targetX, this.selectedPiece.currentY - this.selectedPiece.targetY);
-        if (distToTarget < 25 && this.selectedPiece.currentAngle === this.selectedPiece.targetAngle) {
-          // Atracción magnética sutil
-          this.selectedPiece.currentX += (this.selectedPiece.targetX - this.selectedPiece.currentX) * 0.3;
-          this.selectedPiece.currentY += (this.selectedPiece.targetY - this.selectedPiece.currentY) * 0.3;
+        if (distToTarget < 20 && this.selectedPiece.currentAngle === this.selectedPiece.targetAngle) {
+          this.selectedPiece.currentX += (this.selectedPiece.targetX - this.selectedPiece.currentX) * 0.35;
+          this.selectedPiece.currentY += (this.selectedPiece.targetY - this.selectedPiece.currentY) * 0.35;
         }
       } else if (this.isPanning) {
         const dx = clientX - this.panStart.x;
@@ -459,7 +444,7 @@ class RomanticCatPuzzle {
 
     const handlePointerUp = () => {
       this.initialPinchDist = null;
-      if (this.selectedPiece && this.isDragging) {
+      if (this.selectedPiece && this.isDragging && !this.selectedPiece.isPlaced) {
         this.isDragging = false;
         this.trySnapPiece(this.selectedPiece);
       }
@@ -475,10 +460,9 @@ class RomanticCatPuzzle {
     window.addEventListener('touchmove', handlePointerMove, { passive: false });
     window.addEventListener('touchend', handlePointerUp, { passive: false });
 
-    // Doble toque rápido para rotar
     canvas.addEventListener('click', () => {
       const now = Date.now();
-      if (now - this.lastTapTime < 320 && this.selectedPiece) {
+      if (now - this.lastTapTime < 320 && this.selectedPiece && !this.selectedPiece.isPlaced) {
         this.rotateSelectedPiece(45);
       }
       this.lastTapTime = now;
@@ -486,7 +470,7 @@ class RomanticCatPuzzle {
 
     canvas.addEventListener('wheel', (e) => {
       e.preventDefault();
-      if (e.ctrlKey || e.metaKey || !this.selectedPiece) {
+      if (e.ctrlKey || e.metaKey || !this.selectedPiece || this.selectedPiece.isPlaced) {
         if (e.deltaY < 0) this.zoomIn();
         else this.zoomOut();
       } else {
@@ -496,13 +480,10 @@ class RomanticCatPuzzle {
     }, { passive: false });
   }
 
-  /**
-   * Detección Táctil Amplia y Generosa
-   */
   isPointInPieceGenerous(x, y, piece) {
     const dx = x - piece.currentX;
     const dy = y - piece.currentY;
-    const radius = Math.max(piece.boundingRadius * 1.5, 48);
+    const radius = Math.max(piece.boundingRadius * 1.5, 42);
     return Math.hypot(dx, dy) <= radius;
   }
 
@@ -513,21 +494,14 @@ class RomanticCatPuzzle {
     }
   }
 
-  selectPieceFromTray(pieceId, customPos = null) {
+  selectPieceFromTray(pieceId) {
     const piece = this.pieces.find(p => p.id === pieceId);
     if (!piece) return;
 
-    if (piece.isPlaced) {
-      piece.isPlaced = false;
-      this.isCompleted = false;
-      this.drawBackgroundArtwork();
-      this.drawBoard();
-    }
+    // Si ya está colocada, no hacer nada (queda fija)
+    if (piece.isPlaced) return;
 
-    if (customPos) {
-      piece.currentX = customPos.x;
-      piece.currentY = customPos.y;
-    } else if (piece.currentX < -50) {
+    if (piece.currentX < -50) {
       const bounds = this.getViewportWorldBounds();
       piece.currentX = (bounds.left + bounds.right) / 2 + (Math.random() - 0.5) * 20;
       piece.currentY = (bounds.top + bounds.bottom) / 2 + (Math.random() - 0.5) * 20;
@@ -538,7 +512,7 @@ class RomanticCatPuzzle {
   }
 
   rotateSelectedPiece(deltaAngle = 45) {
-    if (!this.selectedPiece) return;
+    if (!this.selectedPiece || this.selectedPiece.isPlaced) return;
     this.selectedPiece.currentAngle = (this.selectedPiece.currentAngle + deltaAngle + 360) % 360;
     if (this.audio) this.audio.playSparkle(720);
     if (navigator.vibrate) navigator.vibrate(8);
@@ -546,29 +520,29 @@ class RomanticCatPuzzle {
   }
 
   flipSelectedPiece() {
-    if (!this.selectedPiece) return;
+    if (!this.selectedPiece || this.selectedPiece.isPlaced) return;
     this.selectedPiece.currentFlipped = !this.selectedPiece.currentFlipped;
     if (this.audio) this.audio.playSparkle(800);
     if (navigator.vibrate) navigator.vibrate(12);
     this.trySnapPiece(this.selectedPiece);
   }
 
-  /**
-   * Intento de Encaje Magnético Generoso y Suave
-   */
   trySnapPiece(piece) {
+    if (piece.isPlaced) return true;
+
     const dist = Math.hypot(piece.currentX - piece.targetX, piece.currentY - piece.targetY);
     const angleDiff = Math.abs((piece.currentAngle - piece.targetAngle + 360) % 360);
     const flipMatches = (piece.currentFlipped === piece.targetFlipped);
 
     if (dist <= this.snapToleranceDist && (angleDiff <= this.snapToleranceAngle || angleDiff >= 360 - this.snapToleranceAngle) && flipMatches) {
-      // Encajar perfectamente en el target
+      // Bloqueo permanente en la posición y orientación objetivo
       piece.currentX = piece.targetX;
       piece.currentY = piece.targetY;
       piece.currentAngle = piece.targetAngle;
       piece.currentFlipped = piece.targetFlipped;
       piece.isPlaced = true;
       piece.isHinted = false;
+      this.selectedPiece = null;
 
       const cw = this.gameCanvas.width;
       const ch = this.gameCanvas.height;
@@ -595,6 +569,10 @@ class RomanticCatPuzzle {
       const total = this.pieces.length;
       if (this.onProgressUpdate) {
         this.onProgressUpdate(placed, total);
+      }
+
+      if (this.onPieceSelected) {
+        this.onPieceSelected(null);
       }
 
       this.saveProgress(false);
@@ -738,7 +716,7 @@ class RomanticCatPuzzle {
   }
 
   autoSolve() {
-    const stepDelay = 18;
+    const stepDelay = 12;
 
     this.pieces.forEach((p, idx) => {
       setTimeout(() => {
@@ -749,7 +727,7 @@ class RomanticCatPuzzle {
         p.isPlaced = true;
         p.isHinted = false;
 
-        if (idx % 20 === 0) {
+        if (idx % 25 === 0) {
           const cw = this.gameCanvas.width;
           const ch = this.gameCanvas.height;
           const effScale = this.baseScale * this.cameraZoom;
@@ -759,7 +737,7 @@ class RomanticCatPuzzle {
           if (this.audio) this.audio.playPieceSnapChime(1.0 + (idx / this.pieces.length) * 0.4);
         }
 
-        if (idx % 10 === 0 || idx === this.pieces.length - 1) {
+        if (idx % 15 === 0 || idx === this.pieces.length - 1) {
           this.drawBoard();
           if (this.onProgressUpdate) {
             this.onProgressUpdate(this.getPlacedCount(), this.pieces.length);
