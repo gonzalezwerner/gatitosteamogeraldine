@@ -6,18 +6,44 @@
   <meta name="theme-color" content="#0d0614">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="Rompecabezas fotográfico romántico de 700 gatitos entrelazados">
-  <title>Gatitos Enamorados - Rompecabezas Realista (700)</title>
+  <meta name="description" content="Rompecabezas fotográfico romántico de 700 gatitos entrelazados para Geraldine">
+  <title>Gatitos Enamorados - Para Geraldine 🐾💖</title>
   
-  <!-- Google Fonts: Outfit & Dancing Script -->
+  <!-- Google Fonts: Outfit, Dancing Script & Playfair Display -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
   
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/animations.css">
+
+  <!-- Three.js CDN para el Preloader 3D del Espacio -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
+  <!-- 3D Cosmic Space Preloader for Geraldine -->
+  <div class="romantic-3d-preloader" id="romantic-3d-preloader">
+    <div class="preloader-canvas-container" id="preloader-canvas-container"></div>
+    <div class="preloader-ui-card">
+      <div class="preloader-badge">🌌 Universo de Amor Infinito</div>
+      <h1 class="preloader-title">Gatitos Enamorados</h1>
+      <p class="preloader-subtitle">Dedicado con toda mi alma para <strong>Geraldine</strong> 💖</p>
+      
+      <div class="preloader-track">
+        <div class="preloader-fill" id="preloader-fill"></div>
+      </div>
+      
+      <div class="preloader-status-row">
+        <span class="preloader-caption" id="preloader-caption">Tejiendo las estrellas más hermosas para Geraldine... 🌌</span>
+        <span class="preloader-percent" id="preloader-percent">0%</span>
+      </div>
+
+      <button id="btn-enter-universe" class="btn-enter-universe" aria-label="Entrar al universo de amor">
+        ✨ Entrar al Universo de Geraldine 🐾💖
+      </button>
+    </div>
+  </div>
+
   <!-- Ambient Sakura Petals Canvas -->
   <canvas id="ambient-canvas"></canvas>
 
@@ -29,7 +55,7 @@
       <div class="dynamic-island" id="dynamic-island" role="button" aria-label="Dynamic Island Gatitos">
         <div class="island-left">
           <span class="island-icon">🐾</span>
-          <span class="island-title">Gatitos</span>
+          <span class="island-title">Geraldine</span>
         </div>
         <div class="island-pill-dot"></div>
         <div class="island-right">
@@ -42,7 +68,7 @@
     <!-- Apple-Style Frosted Navigation Bar -->
     <nav class="ios-navbar" aria-label="Barra de herramientas">
       <div class="nav-left">
-        <span class="nav-app-name">Gatitos (700)</span>
+        <span class="nav-app-name">Gatitos • Geraldine</span>
       </div>
       <div class="nav-right">
         <button id="btn-help" class="ios-btn-circle" aria-label="Instrucciones y Gestos" title="Cómo Jugar">
@@ -110,7 +136,7 @@
       <!-- Romantic Snap Whisper Toast -->
       <div class="ios-toast" id="romantic-toast" role="status">
         <span class="toast-emoji">💖</span>
-        <span class="toast-label" id="toast-message">¡Un latido más cerca!</span>
+        <span class="toast-label" id="toast-message">Geraldine, en cada vida te buscaría...</span>
       </div>
     </main>
 
@@ -135,7 +161,7 @@
   <div class="instructions-modal-overlay" id="instructions-modal" aria-modal="true" role="dialog">
     <div class="instructions-card">
       <div class="instructions-header">
-        <div class="instructions-badge">📖 Guía de Gestos y Controles</div>
+        <div class="instructions-badge">📖 Para Geraldine con Amor</div>
         <h2 class="instructions-title">¿Cómo jugar? 🐾💖</h2>
       </div>
 
@@ -160,7 +186,7 @@
           <div class="guide-icon-box">🖐️</div>
           <div class="guide-content">
             <span class="guide-title">3. Arrastrar y Encajar</span>
-            <p class="guide-desc">Llévalo a su silueta. Una vez colocada, ¡<strong>la pieza queda fija</strong> y no se desarma!</p>
+            <p class="guide-desc">Llévalo a su silueta. ¡La pieza <strong>queda fija</strong> y no se desarma!</p>
           </div>
         </div>
 
@@ -201,21 +227,21 @@
     
     <div class="victory-card" id="victory-card">
       <div class="card-ornament">🐾 💖 🐾</div>
-      <h2 class="victory-title">¡Destino Entrelazado!</h2>
+      <h2 class="victory-title">¡Para Siempre Juntos!</h2>
       <p class="victory-subtitle">El Gran Mosaico de 700 Gatitos está Completo</p>
       
       <div class="love-letter-parchment">
         <div class="parchment-quote" id="parchment-quote">
-          "Setecientos latidos, setecientos misterios entrelazados... Como dos gatitos bajo la misma luna, nuestras almas encajan en cada rincón del infinito universo."
+          "Para mi amada Geraldine: Setecientos latidos, infinitas galaxias y un solo destino... Entre millones de estrellas en el universo, mis ojos siempre buscarán los tuyos. Eres mi amor eterno, mi paz, mi inspiración y mi mayor felicidad en este mundo. Te amo con toda mi alma por siempre, mi niña hermosa."
         </div>
         <div class="dedication-box">
-          <label for="dedication-name">Dedicatoria para mi persona especial:</label>
-          <input type="text" id="dedication-name" placeholder="Escribe un nombre aquí..." maxlength="35" aria-label="Nombre para dedicatoria">
+          <label for="dedication-name">Dedicatoria de amor infinito:</label>
+          <input type="text" id="dedication-name" value="Geraldine" placeholder="Geraldine..." maxlength="35" aria-label="Nombre para dedicatoria">
         </div>
       </div>
 
       <div class="victory-actions">
-        <button id="btn-save-card" class="btn-romantic-primary">💌 Guardar Postal de Recuerdo</button>
+        <button id="btn-save-card" class="btn-romantic-primary">💌 Descargar Postal de Recuerdo para Geraldine</button>
         <button id="btn-replay" class="btn-romantic-secondary">🔄 Jugar de Nuevo</button>
       </div>
     </div>
@@ -228,6 +254,7 @@
   </div>
 
   <!-- Scripts -->
+  <script src="js/preloader3d.js"></script>
   <script src="js/pieces.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/particles.js"></script>

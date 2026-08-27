@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador con Instrucciones en Pantalla y Gestos Táctiles
+ * app.js - Orquestador para Geraldine con Preloader 3D de Three.js
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,7 +43,15 @@ document.addEventListener('DOMContentLoaded', () => {
   let particleEngine = null;
   let cinematic = null;
 
-  // 1. Inicializar Motores
+  // 1. Inicializar Preloader 3D Cósmico con Three.js
+  const preloader = new Romantic3DPreloader({
+    onComplete: () => {
+      unlockAudio();
+      window.romanticAudio.playKittenSnapSound(0);
+    }
+  });
+
+  // 2. Inicializar Motores
   particleEngine = new RomanticParticleEngine(fxCanvas, ambientCanvas);
   cinematic = new RomanticVictoryCinematic({ audio: window.romanticAudio });
 
@@ -59,11 +67,11 @@ document.addEventListener('DOMContentLoaded', () => {
       if (islandProgress) islandProgress.textContent = `${pct}%`;
 
       if (placed === 0) {
-        statusText.innerHTML = `<span class="heart-pulse">💗</span> Toca un gatito abajo y arrástralo a su silueta...`;
+        statusText.innerHTML = `<span class="heart-pulse">💗</span> Para Geraldine con amor: toca un gatito abajo...`;
       } else if (placed < total) {
-        statusText.innerHTML = `<span class="heart-pulse">💖</span> ${placed} de ${total} piezas unidas (${pct}%)...`;
+        statusText.innerHTML = `<span class="heart-pulse">💖</span> ${placed} de ${total} piezas unidas para Geraldine (${pct}%)...`;
       } else {
-        statusText.innerHTML = `<span class="heart-pulse">✨</span> ¡El mosaico fotográfico está completo!`;
+        statusText.innerHTML = `<span class="heart-pulse">✨</span> ¡El mosaico de Geraldine está completo!`;
       }
 
       updateTrayCards();
@@ -85,7 +93,7 @@ document.addEventListener('DOMContentLoaded', () => {
     buildTray(MASTER_LEVEL.pieces);
   };
 
-  // 2. Iniciar y Cargar Partida
+  // 3. Iniciar Partida
   function initGame(isReset = false) {
     if (isReset) {
       localStorage.removeItem('gatitos_realistic_save');
@@ -96,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     pieceControlsOverlay.classList.remove('visible');
   }
 
-  // 3. Construir Bandeja con Miniaturas
+  // 4. Construir Bandeja con Miniaturas
   function buildTray(pieces) {
     piecesTray.innerHTML = '';
     const fragment = document.createDocumentFragment();
@@ -188,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // 4. Gestión de Audio
+  // 5. Gestión de Audio
   let audioUnlocked = false;
   function unlockAudio() {
     if (!audioUnlocked) {
@@ -198,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
   window.addEventListener('pointerdown', unlockAudio, { once: true });
 
-  // 5. Botones y Eventos
+  // 6. Botones y Eventos
   if (btnHelp) {
     btnHelp.addEventListener('click', () => {
       unlockAudio();
@@ -308,12 +316,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 6. Ciclo de Tips de Gestos en Pantalla
+  // Tips de gestos rotativos dedicados
   const gestureTips = [
+    { icon: "💖", text: "Para Geraldine con todo mi amor eterno" },
     { icon: "🤏", text: "Pellizca con 2 dedos para hacer Zoom" },
     { icon: "🔄", text: "Toca 2 veces rápido sobre un gatito para girarlo" },
     { icon: "🖐️", text: "Arrastra el gatito hacia su silueta para encajarlo" },
-    { icon: "✌️", text: "Desliza con 2 dedos en el fondo para moverte" },
     { icon: "✨", text: "Usa la pista con cuidado: ¡solo tienes 1 uso!" }
   ];
   let tipIndex = 0;
@@ -325,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const icon = document.querySelector('.gesture-icon');
       if (icon) icon.textContent = item.icon;
     }
-  }, 4500);
+  }, 4200);
 
   window.addEventListener('resize', () => {
     puzzle.resize();
@@ -334,11 +342,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (window.innerWidth >= 500 && window.innerHeight >= 700) {
     deviceContainer.classList.add('iphone-framed');
-  }
-
-  // Mostrar modal de instrucciones en la primera visita
-  if (!localStorage.getItem('gatitos_saw_instructions')) {
-    instructionsModal.classList.add('active');
   }
 
   // Iniciar juego

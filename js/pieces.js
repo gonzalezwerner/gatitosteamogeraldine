@@ -1,24 +1,23 @@
 /**
- * pieces.js - Generador de 700 Piezas Entrelazadas (Fotografía Maestra)
- * En la solución, las 700 piezas reconstruyen la fotografía al 100%.
+ * pieces.js - Generador de 700 Piezas con Palabras de Amor Infinito para Geraldine
  */
 
 const ROMANTIC_WHISPERS = [
-  "¡Nuestros corazones encajan!",
-  "Un latido más cerca de ti...",
-  "El destino unió sus caminos.",
-  "Dos almas que se reconocen.",
-  "Una caricia en la penumbra.",
-  "El hilo rojo nunca se rompe.",
-  "Amor tejido bajo las estrellas.",
-  "Un ronroneo de pura felicidad.",
-  "Juntos en cada misterio.",
-  "Tu mirada ilumina mi noche.",
-  "Un pacto eterno de amor felino.",
-  "Cada pieza encuentra su hogar."
+  "Geraldine, en cada vida te buscaría y en cada vida te elegiría 💖",
+  "Cada latido de estos 700 gatitos susurra tu nombre, mi amor...",
+  "Eres mi luna en la noche más oscura y mi sol de cada amanecer 🌙✨",
+  "El universo entero conspiró para que nuestras almas se encontraran.",
+  "Geraldine, te amo más allá de las estrellas y del tiempo eterno 🐾",
+  "Tú eres la pieza perfecta que le da sentido a todo mi universo 🌸",
+  "Mil vidas no me alcanzarían para amarte como te mereces, mi reina 💍",
+  "Mi hogar es cualquier lugar donde estés tú, Geraldine.",
+  "Dos almas destinadas a amarse por toda la eternidad... 💖",
+  "Geraldine, tu sonrisa ilumina hasta el rincón más lejano del cosmos ✨",
+  "Nuestros corazones encajan en una melodía que nunca terminará.",
+  "Para ti, Geraldine: el amor más puro, tierno y sincero del mundo 💌"
 ];
 
-const VICTORY_POEM = "Setecientos latidos, setecientos misterios entrelazados... Como dos gatitos bajo la misma luna, nuestras almas encajan en cada rincón del infinito universo.";
+const VICTORY_POEM = "Para mi amada Geraldine: Setecientos latidos, infinitas galaxias y un solo destino... Entre millones de estrellas en el universo, mis ojos siempre buscarán los tuyos. Eres mi amor eterno, mi paz, mi inspiración y mi mayor felicidad en este mundo. Te amo con toda mi alma por siempre, mi niña hermosa. 🐾💖✨";
 
 function createCatPiece(config) {
   let maxR = 22;
@@ -53,7 +52,7 @@ function createCatPiece(config) {
 }
 
 /**
- * Generador de las 700 Piezas Teseladas
+ * Generador de las 700 Piezas Teseladas para Geraldine
  */
 function generate700CatUniverse() {
   const pieces = [];
@@ -72,7 +71,7 @@ function generate700CatUniverse() {
     { hex: "#059669", eye: "#fde047" }
   ];
 
-  // Siluetas anatómicas felinas proporcionadas para 700 piezas
+  // Siluetas anatómicas felinas
   const basePolygons = [
     [ { x: -20, y: -16 }, { x: -10, y: -6 }, { x: -2, y: -18 }, { x: 12, y: -8 }, { x: 22, y: 6 }, { x: 14, y: 20 }, { x: -8, y: 18 }, { x: -22, y: 2 } ],
     [ { x: -22, y: 4 }, { x: -12, y: -12 }, { x: 0, y: -16 }, { x: 14, y: -8 }, { x: 22, y: 10 }, { x: 8, y: 20 }, { x: -12, y: 18 }, { x: -22, y: 12 } ],
@@ -83,11 +82,11 @@ function generate700CatUniverse() {
   ];
 
   const DISORIENTED_ANGLES = [45, 90, 135, 180, 225, 270, 315];
-  const phi = (1 + Math.sqrt(5)) / 2; // Proporción áurea
+  const phi = (1 + Math.sqrt(5)) / 2;
 
   for (let i = 0; i < TOTAL; i++) {
     const theta = i * 2 * Math.PI * phi;
-    const r = Math.sqrt(i) * 21.8 + 24; // Distribución harmónica en 1200x1200
+    const r = Math.sqrt(i) * 21.8 + 24;
 
     const targetX = Math.round(CENTER_X + Math.cos(theta) * r);
     const targetY = Math.round(CENTER_Y + Math.sin(theta) * r);
@@ -113,7 +112,7 @@ function generate700CatUniverse() {
 
 const MASTER_LEVEL = {
   title: "Gatitos Enamorados",
-  subtitle: "700 Gatitos Entrelazados • Fotografía Maestra",
+  subtitle: "700 Gatitos Entrelazados • Para Geraldine",
   poem: VICTORY_POEM,
   pieces: generate700CatUniverse(),
   boardSize: 1200
