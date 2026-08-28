@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador para Geraldine con Miniaturas Luminosas y Alto Contraste
+ * app.js - Orquestador para Geraldine con Máxima Claridad y Luminosidad en Zonas Oscuras
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -163,14 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Renderizado Luminoso de Miniaturas: Mayor Brillo, Saturación y Realce Visual
+   * Renderizado Luminoso de Miniaturas: Realce de sombras, brillo celestial y contraste
    */
   function renderRealPieceThumbnail(canvas, piece) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, 54, 54);
     ctx.save();
     ctx.translate(27, 27);
-    ctx.scale(0.86, 0.86);
+    ctx.scale(0.88, 0.88);
 
     ctx.beginPath();
     const poly = piece.polygon;
@@ -180,27 +180,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     ctx.closePath();
 
-    // Fondo luminoso para evitar que piezas oscuras se pierdan
-    ctx.fillStyle = 'rgba(255, 230, 245, 0.15)';
+    // Fondo cálido iluminado para dar luz a las piezas de noche o madera
+    ctx.fillStyle = 'rgba(120, 50, 140, 0.35)';
     ctx.fill();
 
     ctx.save();
     ctx.clip();
 
     if (puzzle.catImageLoaded) {
-      // Realce de luminosidad y saturación para máxima claridad fotográfica
-      ctx.filter = 'brightness(1.22) saturate(1.22) contrast(1.06)';
+      // Realce de iluminación de sombras (Shadow Lift) + saturación
+      ctx.filter = 'brightness(1.35) saturate(1.3) contrast(1.1)';
       ctx.drawImage(puzzle.catImage, -piece.targetX, -piece.targetY, 1200, 1200);
+
+      // Sutil destello de luz sobre piezas oscuras para que revelen sus vetas y colores
+      ctx.fillStyle = 'rgba(255, 200, 230, 0.12)';
+      ctx.fillRect(-27, -27, 54, 54);
     } else {
       ctx.fillStyle = piece.color;
       ctx.fill();
     }
     ctx.restore();
 
-    // Borde brillante de oro y cristal
+    // Borde brillante oro-rosa nítido
     ctx.strokeStyle = '#ffeaa7';
     ctx.lineWidth = 2.0;
-    ctx.shadowColor = 'rgba(255, 214, 137, 0.5)';
+    ctx.shadowColor = 'rgba(255, 214, 137, 0.6)';
     ctx.shadowBlur = 4;
     ctx.stroke();
 

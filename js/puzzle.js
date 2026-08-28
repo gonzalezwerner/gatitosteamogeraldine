@@ -1,5 +1,5 @@
 /**
- * puzzle.js - Motor de Mosaico Luminoso: Piezas con Mayor Brillo, Claridad y Contraste
+ * puzzle.js - Motor de Mosaico Luminoso con Realce de Sombras y Zonas Oscuras
  */
 
 class RomanticCatPuzzle {
@@ -68,7 +68,7 @@ class RomanticCatPuzzle {
       id: p.id,
       name: p.name,
       category: p.category || "general",
-      personality: p.personality || "Romántico",
+      personality: "Romántico",
       color: p.color,
       eyeColor: p.eyeColor || "#f9d689",
       polygon: p.polygon,
@@ -308,7 +308,7 @@ class RomanticCatPuzzle {
 
     const viewBounds = this.getViewportWorldBounds();
 
-    // 1. Dibujar piezas colocadas (Selladas, continuas y con luminosidad fotográfica)
+    // 1. Dibujar piezas colocadas
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
       if (!p.isPlaced || p === this.selectedPiece) continue;
@@ -324,7 +324,7 @@ class RomanticCatPuzzle {
       this.drawRealCatPiece(ctx, p, p.currentX, p.currentY, p.currentAngle, p.currentFlipped, false);
     }
 
-    // 3. Dibujar la pieza seleccionada arriba de todas con brillo
+    // 3. Dibujar la pieza seleccionada arriba de todas con aura
     if (this.selectedPiece && this.selectedPiece.currentX > -100) {
       this.drawRealCatPiece(
         ctx,
@@ -343,7 +343,7 @@ class RomanticCatPuzzle {
   }
 
   /**
-   * Renderizado Luminoso de Piezas en el Tablero
+   * Renderizado Luminoso de Piezas con Realce de Sombras
    */
   drawRealCatPiece(ctx, piece, x, y, angle, flipped, isSelected) {
     ctx.save();
@@ -359,13 +359,25 @@ class RomanticCatPuzzle {
     }
     ctx.closePath();
 
+    // Fondo iluminado para piezas sueltas
+    if (!piece.isPlaced) {
+      ctx.fillStyle = 'rgba(120, 50, 140, 0.35)';
+      ctx.fill();
+    }
+
     ctx.save();
     ctx.clip();
 
     if (this.catImageLoaded) {
-      // Brillo y viveza de color para que nunca se vean apagadas ni oscuras
-      ctx.filter = 'brightness(1.15) saturate(1.16) contrast(1.05)';
+      // Realce de iluminación de sombras (Shadow Lift)
+      ctx.filter = 'brightness(1.3) saturate(1.25) contrast(1.08)';
       ctx.drawImage(this.catImage, -piece.targetX, -piece.targetY, 1200, 1200);
+
+      // Si no está colocada, velo sutil de starlight
+      if (!piece.isPlaced) {
+        ctx.fillStyle = 'rgba(255, 210, 235, 0.1)';
+        ctx.fillRect(-60, -60, 120, 120);
+      }
     } else {
       ctx.fillStyle = piece.color;
       ctx.fill();
@@ -379,13 +391,12 @@ class RomanticCatPuzzle {
       ctx.shadowBlur = 10;
       ctx.stroke();
     } else if (!piece.isPlaced) {
-      ctx.strokeStyle = 'rgba(255, 180, 210, 0.9)';
+      ctx.strokeStyle = 'rgba(255, 185, 215, 0.9)';
       ctx.lineWidth = 1.8;
-      ctx.shadowColor = 'rgba(255, 117, 160, 0.4)';
-      ctx.shadowBlur = 4;
+      ctx.shadowColor = 'rgba(255, 117, 160, 0.45)';
+      ctx.shadowBlur = 5;
       ctx.stroke();
     }
-    // Si isPlaced es true -> Cero trazo exterior para fusión perfecta
 
     ctx.restore();
   }
