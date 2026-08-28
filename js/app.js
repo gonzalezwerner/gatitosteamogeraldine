@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador para Geraldine con Audio Totalmente Desbloqueado
+ * app.js - Orquestador para Geraldine con Bandeja Mezclada (Desafío Auténtico) y UI Pulida
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let particleEngine = null;
   let cinematic = null;
 
-  // Desbloqueo inmediato de audio en iOS y navegadores
+  // Desbloqueo continuo de audio
   function unlockAudio() {
     if (window.romanticAudio) {
       window.romanticAudio.unlock();
@@ -111,15 +111,34 @@ document.addEventListener('DOMContentLoaded', () => {
     pieceControlsOverlay.classList.remove('visible');
   }
 
-  // 4. Construir Bandeja con Miniaturas
+  // Pseudo-random deterministic shuffle para que la bandeja esté mezclada como un rompecabezas real
+  function getShuffledPieces(pieces) {
+    // Tomar piezas no colocadas primero
+    const unplaced = pieces.filter(p => !p.isPlaced);
+    const placed = pieces.filter(p => p.isPlaced);
+
+    // Semilla pseudo-aleatoria para dispersar piezas por todo el rompecabezas
+    const shuffled = [...unplaced];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = (i * 37 + 11) % (i + 1);
+      const temp = shuffled[i];
+      shuffled[i] = shuffled[j];
+      shuffled[j] = temp;
+    }
+
+    return [...shuffled, ...placed];
+  }
+
+  // 4. Construir Bandeja con Miniaturas Mezcladas
   function buildTray(pieces) {
     piecesTray.innerHTML = '';
     const fragment = document.createDocumentFragment();
 
-    const limit = Math.min(pieces.length, 80);
+    const displayList = getShuffledPieces(pieces);
+    const limit = Math.min(displayList.length, 80);
 
     for (let i = 0; i < limit; i++) {
-      const p = pieces[i];
+      const p = displayList[i];
       const card = document.createElement('div');
       card.className = 'tray-cat-card' + (p.isPlaced ? ' placed' : '');
       card.id = `tray-card-${p.id}`;
@@ -318,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { icon: "💖", text: "Para Geraldine con todo mi amor eterno" },
     { icon: "🤏", text: "Pellizca con 2 dedos para hacer Zoom" },
     { icon: "🔄", text: "Toca 2 veces rápido sobre un gatito para girarlo" },
-    { icon: "🖐️", text: "Arrastra el gatito hacia su silueta para encajarlo" },
+    { icon: "🖐️", text: "Arrastra el gatito hacia su lugar para encajarlo" },
     { icon: "✨", text: "Usa la pista con cuidado: ¡solo tienes 1 uso!" }
   ];
   let tipIndex = 0;

@@ -1,6 +1,5 @@
 /**
- * pieces.js - Generador de 700 Piezas Teseladas Continuas (Sin Huecos Negros)
- * Reconstrucción matemática de 28x25 celdas entrelazadas con siluetas felinas continuas.
+ * pieces.js - 700 Piezas de Mosaico Orgánico con Formas Felinas Entrelazadas y Distribución Aleatoria
  */
 
 const ROMANTIC_WHISPERS = [
@@ -37,7 +36,7 @@ function createCatPiece(config) {
     polygon: config.polygon,
     boundingRadius: Math.round(maxR + 2),
     
-    // Posición objetivo matemática en la cuadrícula 1200x1200
+    // Posición objetivo matemática
     targetX: config.targetX,
     targetY: config.targetY,
     targetAngle: 0,
@@ -53,8 +52,8 @@ function createCatPiece(config) {
 }
 
 /**
- * Generador de 700 Piezas Continuas (28 Columnas x 25 Filas = 700 Piezas)
- * Cobertura 100% continua del lienzo de 1200x1200px sin huecos negros ni separaciones.
+ * Generador de las 700 Piezas Entrelazadas (28 x 25 = 700)
+ * Siluetas orgánicas con orejas y curvas felinas continuas sin líneas rectas de ladrillo.
  */
 function generate700CatUniverse() {
   const pieces = [];
@@ -78,67 +77,8 @@ function generate700CatUniverse() {
   ];
 
   const DISORIENTED_ANGLES = [45, 90, 135, 180, 225, 270, 315];
-
-  // Siluetas felinas con orejitas y pestañas de encaje que cubren el 100% del área de cada celda
-  const hw = CELL_W / 2 + 1.2; // mitad de ancho con solape para cero huecos
-  const hh = CELL_H / 2 + 1.2; // mitad de alto con solape para cero huecos
-
-  const catPolygons = [
-    // Silueta 1: Gatito de frente con orejas puntiagudas
-    [
-      { x: -hw, y: -hh + 8 },
-      { x: -hw + 4, y: -hh },
-      { x: -hw + 14, y: -hh + 6 },
-      { x: hw - 14, y: -hh + 6 },
-      { x: hw - 4, y: -hh },
-      { x: hw, y: -hh + 8 },
-      { x: hw + 2, y: 0 },
-      { x: hw, y: hh - 6 },
-      { x: hw - 10, y: hh },
-      { x: -hw + 10, y: hh },
-      { x: -hw, y: hh - 6 },
-      { x: -hw - 2, y: 0 }
-    ],
-    // Silueta 2: Gatito mirando de lado con oreja derecha prominente
-    [
-      { x: -hw, y: -hh + 6 },
-      { x: -hw + 6, y: -hh + 2 },
-      { x: -4, y: -hh + 8 },
-      { x: hw - 8, y: -hh },
-      { x: hw, y: -hh + 6 },
-      { x: hw + 3, y: 2 },
-      { x: hw, y: hh - 4 },
-      { x: 4, y: hh },
-      { x: -hw + 8, y: hh },
-      { x: -hw - 2, y: 2 }
-    ],
-    // Silueta 3: Gatito tierno redondeado con orejitas cortas
-    [
-      { x: -hw, y: -hh + 10 },
-      { x: -hw + 8, y: -hh + 1 },
-      { x: 0, y: -hh + 8 },
-      { x: hw - 8, y: -hh + 1 },
-      { x: hw, y: -hh + 10 },
-      { x: hw + 2, y: -2 },
-      { x: hw, y: hh - 6 },
-      { x: 0, y: hh },
-      { x: -hw, y: hh - 6 },
-      { x: -hw - 2, y: -2 }
-    ],
-    // Silueta 4: Gatito curvado con oreja izquierda prominente
-    [
-      { x: -hw, y: -hh + 2 },
-      { x: -hw + 10, y: -hh },
-      { x: 2, y: -hh + 7 },
-      { x: hw - 6, y: -hh + 3 },
-      { x: hw, y: -hh + 8 },
-      { x: hw + 2, y: 0 },
-      { x: hw, y: hh - 8 },
-      { x: -2, y: hh },
-      { x: -hw + 6, y: hh - 2 },
-      { x: -hw - 3, y: 0 }
-    ]
-  ];
+  const hw = CELL_W / 2 + 1.5;
+  const hh = CELL_H / 2 + 1.5;
 
   let idCounter = 1;
 
@@ -149,8 +89,29 @@ function generate700CatUniverse() {
       const targetY = Math.round((r + 0.5) * CELL_H);
 
       const initialAngle = DISORIENTED_ANGLES[i % DISORIENTED_ANGLES.length];
-      const style = palettes[(r + c) % palettes.length];
-      const poly = catPolygons[(r * COLS + c) % catPolygons.length];
+      const style = palettes[(r * 3 + c * 5) % palettes.length];
+
+      // Formas felinas orgánicas entrelazadas con orejitas y curvas
+      const earL = -hh + 2 + ((r + c) % 3);
+      const earR = -hh + 1 + ((r * 2 + c) % 3);
+      const pawL = hw + 2 * ((c % 2 === 0) ? 1 : -0.5);
+      const pawR = -hw - 2 * ((r % 2 === 0) ? 1 : -0.5);
+
+      const poly = [
+        { x: -hw, y: -hh + 10 },
+        { x: -hw + 4, y: earL },
+        { x: -hw + 14, y: -hh + 8 },
+        { x: hw - 14, y: -hh + 8 },
+        { x: hw - 4, y: earR },
+        { x: hw, y: -hh + 10 },
+        { x: pawL, y: 0 },
+        { x: hw, y: hh - 8 },
+        { x: hw - 10, y: hh },
+        { x: 0, y: hh - 3 },
+        { x: -hw + 10, y: hh },
+        { x: -hw, y: hh - 8 },
+        { x: pawR, y: 0 }
+      ];
 
       pieces.push(createCatPiece({
         id: `cat_${idCounter}`,
