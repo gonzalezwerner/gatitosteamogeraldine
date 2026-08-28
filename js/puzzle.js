@@ -1,5 +1,5 @@
 /**
- * puzzle.js - Motor de Mosaico Puro: Bloqueo Firme de Piezas Colocadas y Cero Desplazamientos Accidentales
+ * puzzle.js - Motor de Mosaico Luminoso: Piezas con Mayor Brillo, Claridad y Contraste
  */
 
 class RomanticCatPuzzle {
@@ -52,7 +52,7 @@ class RomanticCatPuzzle {
     this.initialPinchDist = null;
     this.initialPinchZoom = 1;
 
-    // Tolerancia de encaje calibrada
+    // Tolerancia de encaje
     this.snapToleranceDist = 38;
     this.snapToleranceAngle = 28;
 
@@ -308,7 +308,7 @@ class RomanticCatPuzzle {
 
     const viewBounds = this.getViewportWorldBounds();
 
-    // 1. Dibujar piezas colocadas (Selladas y continuas sin líneas)
+    // 1. Dibujar piezas colocadas (Selladas, continuas y con luminosidad fotográfica)
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
       if (!p.isPlaced || p === this.selectedPiece) continue;
@@ -316,7 +316,7 @@ class RomanticCatPuzzle {
       this.drawRealCatPiece(ctx, p, p.currentX, p.currentY, p.currentAngle, p.currentFlipped, false);
     }
 
-    // 2. Dibujar piezas sueltas no colocadas
+    // 2. Dibujar piezas sueltas en el tablero
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
       if (p.isPlaced || p.currentX < -100 || p === this.selectedPiece) continue;
@@ -324,7 +324,7 @@ class RomanticCatPuzzle {
       this.drawRealCatPiece(ctx, p, p.currentX, p.currentY, p.currentAngle, p.currentFlipped, false);
     }
 
-    // 3. Dibujar la pieza que se está arrastrando en primer plano
+    // 3. Dibujar la pieza seleccionada arriba de todas con brillo
     if (this.selectedPiece && this.selectedPiece.currentX > -100) {
       this.drawRealCatPiece(
         ctx,
@@ -342,6 +342,9 @@ class RomanticCatPuzzle {
     requestAnimationFrame(this.renderLoop);
   }
 
+  /**
+   * Renderizado Luminoso de Piezas en el Tablero
+   */
   drawRealCatPiece(ctx, piece, x, y, angle, flipped, isSelected) {
     ctx.save();
     ctx.translate(x, y);
@@ -360,6 +363,8 @@ class RomanticCatPuzzle {
     ctx.clip();
 
     if (this.catImageLoaded) {
+      // Brillo y viveza de color para que nunca se vean apagadas ni oscuras
+      ctx.filter = 'brightness(1.15) saturate(1.16) contrast(1.05)';
       ctx.drawImage(this.catImage, -piece.targetX, -piece.targetY, 1200, 1200);
     } else {
       ctx.fillStyle = piece.color;
@@ -369,14 +374,18 @@ class RomanticCatPuzzle {
 
     if (isSelected) {
       ctx.strokeStyle = '#ffd689';
-      ctx.lineWidth = 3.0;
+      ctx.lineWidth = 3.2;
+      ctx.shadowColor = '#ffd689';
+      ctx.shadowBlur = 10;
       ctx.stroke();
     } else if (!piece.isPlaced) {
-      ctx.strokeStyle = 'rgba(255, 117, 160, 0.75)';
-      ctx.lineWidth = 1.4;
+      ctx.strokeStyle = 'rgba(255, 180, 210, 0.9)';
+      ctx.lineWidth = 1.8;
+      ctx.shadowColor = 'rgba(255, 117, 160, 0.4)';
+      ctx.shadowBlur = 4;
       ctx.stroke();
     }
-    // Si isPlaced es true -> Cero trazo (0 líneas negras)
+    // Si isPlaced es true -> Cero trazo exterior para fusión perfecta
 
     ctx.restore();
   }
@@ -415,7 +424,6 @@ class RomanticCatPuzzle {
 
       let hitPiece = null;
 
-      // Si ya hay una pieza seleccionada y NO está colocada
       if (this.selectedPiece && !this.selectedPiece.isPlaced && this.selectedPiece.currentX > -100) {
         const screenPt = this.worldToScreen(this.selectedPiece.currentX, this.selectedPiece.currentY);
         const distScreen = Math.hypot(clientX - screenPt.x, clientY - screenPt.y);
@@ -424,7 +432,6 @@ class RomanticCatPuzzle {
         }
       }
 
-      // Solo permitir agarrar piezas NO colocadas (las piezas colocadas quedan selladas en el tablero)
       if (!hitPiece) {
         for (let i = this.pieces.length - 1; i >= 0; i--) {
           const p = this.pieces[i];
@@ -608,7 +615,7 @@ class RomanticCatPuzzle {
       piece.currentY = piece.targetY;
       piece.currentAngle = 0;
       piece.currentFlipped = false;
-      piece.isPlaced = true; // Queda firmemente colocada
+      piece.isPlaced = true;
       piece.isHinted = false;
       this.selectedPiece = null;
 

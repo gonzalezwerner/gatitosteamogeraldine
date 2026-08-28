@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador para Geraldine con Eliminación Automática de Piezas Colocadas en la Bandeja
+ * app.js - Orquestador para Geraldine con Miniaturas Luminosas y Alto Contraste
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return shuffled;
   }
 
-  // 4. Construir Bandeja con SOLO las piezas que NO han sido colocadas
+  // 4. Construir Bandeja Limpia y Luminosa
   function buildTray(pieces) {
     piecesTray.innerHTML = '';
     const fragment = document.createDocumentFragment();
@@ -162,12 +162,15 @@ document.addEventListener('DOMContentLoaded', () => {
     trayCount.textContent = displayList.length;
   }
 
+  /**
+   * Renderizado Luminoso de Miniaturas: Mayor Brillo, Saturación y Realce Visual
+   */
   function renderRealPieceThumbnail(canvas, piece) {
     const ctx = canvas.getContext('2d');
     ctx.clearRect(0, 0, 54, 54);
     ctx.save();
     ctx.translate(27, 27);
-    ctx.scale(0.88, 0.88);
+    ctx.scale(0.86, 0.86);
 
     ctx.beginPath();
     const poly = piece.polygon;
@@ -177,10 +180,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     ctx.closePath();
 
+    // Fondo luminoso para evitar que piezas oscuras se pierdan
+    ctx.fillStyle = 'rgba(255, 230, 245, 0.15)';
+    ctx.fill();
+
     ctx.save();
     ctx.clip();
 
     if (puzzle.catImageLoaded) {
+      // Realce de luminosidad y saturación para máxima claridad fotográfica
+      ctx.filter = 'brightness(1.22) saturate(1.22) contrast(1.06)';
       ctx.drawImage(puzzle.catImage, -piece.targetX, -piece.targetY, 1200, 1200);
     } else {
       ctx.fillStyle = piece.color;
@@ -188,14 +197,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     ctx.restore();
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
-    ctx.lineWidth = 1.6;
+    // Borde brillante de oro y cristal
+    ctx.strokeStyle = '#ffeaa7';
+    ctx.lineWidth = 2.0;
+    ctx.shadowColor = 'rgba(255, 214, 137, 0.5)';
+    ctx.shadowBlur = 4;
     ctx.stroke();
 
     ctx.restore();
   }
 
-  // Elimina de forma permanente las piezas colocadas de la bandeja inferior
   function updateTrayCards() {
     puzzle.pieces.forEach(p => {
       if (p.isPlaced) {
