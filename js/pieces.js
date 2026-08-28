@@ -1,5 +1,5 @@
 /**
- * pieces.js - Generador de 700 Piezas con Palabras de Amor Infinito para Geraldine
+ * pieces.js - Generador de 700 Piezas con Distribución 100% Calibrada en 1200x1200px
  */
 
 const ROMANTIC_WHISPERS = [
@@ -53,6 +53,7 @@ function createCatPiece(config) {
 
 /**
  * Generador de las 700 Piezas Teseladas para Geraldine
+ * Todas las coordenadas se mantienen perfectamente dentro del lienzo de 1200x1200
  */
 function generate700CatUniverse() {
   const pieces = [];
@@ -71,7 +72,7 @@ function generate700CatUniverse() {
     { hex: "#059669", eye: "#fde047" }
   ];
 
-  // Siluetas anatómicas felinas
+  // Siluetas anatómicas felinas equilibradas
   const basePolygons = [
     [ { x: -20, y: -16 }, { x: -10, y: -6 }, { x: -2, y: -18 }, { x: 12, y: -8 }, { x: 22, y: 6 }, { x: 14, y: 20 }, { x: -8, y: 18 }, { x: -22, y: 2 } ],
     [ { x: -22, y: 4 }, { x: -12, y: -12 }, { x: 0, y: -16 }, { x: 14, y: -8 }, { x: 22, y: 10 }, { x: 8, y: 20 }, { x: -12, y: 18 }, { x: -22, y: 12 } ],
@@ -86,7 +87,7 @@ function generate700CatUniverse() {
 
   for (let i = 0; i < TOTAL; i++) {
     const theta = i * 2 * Math.PI * phi;
-    const r = Math.sqrt(i) * 21.8 + 24;
+    const r = Math.sqrt(i) * 20.8 + 22; // Distribución áurea 100% dentro de límites (radio máx 571px)
 
     const targetX = Math.round(CENTER_X + Math.cos(theta) * r);
     const targetY = Math.round(CENTER_Y + Math.sin(theta) * r);

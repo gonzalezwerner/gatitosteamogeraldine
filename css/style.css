@@ -36,7 +36,8 @@
 
 html, body {
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   background-color: #050208;
   font-family: var(--font-main);
@@ -53,6 +54,7 @@ html, body {
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   z-index: 2000;
   background: #06020a;
   display: flex;
@@ -193,6 +195,7 @@ html, body {
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   z-index: 1;
   pointer-events: none;
   opacity: 0.65;
@@ -203,7 +206,8 @@ html, body {
   position: relative;
   z-index: 10;
   width: 100%;
-  height: 100%;
+  height: 100vh;
+  height: 100dvh;
   max-width: 430px;
   max-height: 932px;
   background: linear-gradient(180deg, rgba(20, 8, 30, 0.96) 0%, rgba(11, 4, 18, 0.98) 100%);
@@ -217,6 +221,7 @@ html, body {
   .ios-app-container.iphone-framed {
     border-radius: 54px;
     height: 92vh;
+    height: 92dvh;
     border: 4px solid #3d234d;
     box-shadow: 
       0 0 0 2px #1e0f27,
@@ -721,6 +726,7 @@ html, body {
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   z-index: 500;
   display: flex;
   align-items: center;
@@ -743,6 +749,7 @@ html, body {
   width: 100%;
   max-width: 390px;
   max-height: 85vh;
+  max-height: 85dvh;
   overflow-y: auto;
   background: linear-gradient(165deg, rgba(38, 16, 54, 0.96) 0%, rgba(18, 6, 28, 0.98) 100%);
   border: 1.5px solid var(--border-glass);
@@ -852,6 +859,7 @@ html, body {
   left: 0;
   width: 100vw;
   height: 100vh;
+  height: 100dvh;
   z-index: 1000;
   display: flex;
   align-items: center;
