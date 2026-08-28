@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador para Geraldine con Preloader 3D de Three.js y Tablero Limpio
+ * app.js - Orquestador para Geraldine con Preloader 3D de Three.js y Guardado Robusto
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -90,19 +90,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   puzzle.onImageReady = () => {
-    buildTray(MASTER_LEVEL.pieces);
+    buildTray(puzzle.pieces);
   };
 
-  // 3. Iniciar Partida (Tablero Limpio)
+  // 3. Iniciar Partida
   function initGame(isReset = false) {
-    if (isReset) {
-      try {
-        localStorage.removeItem('gatitos_geraldine_700_v1');
-        localStorage.removeItem('gatitos_realistic_save');
-      } catch (e) {}
-    }
     puzzle.loadLevel(MASTER_LEVEL, isReset);
-    buildTray(MASTER_LEVEL.pieces);
+    buildTray(puzzle.pieces);
     puzzle.updateHintButtonUI();
     pieceControlsOverlay.classList.remove('visible');
   }
@@ -112,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     piecesTray.innerHTML = '';
     const fragment = document.createDocumentFragment();
 
-    const limit = Math.min(pieces.length, 60);
+    const limit = Math.min(pieces.length, 80);
 
     for (let i = 0; i < limit; i++) {
       const p = pieces[i];
@@ -185,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     puzzle.pieces.forEach(p => {
       const card = document.getElementById(`tray-card-${p.id}`);
       if (card) {
-        card.classList.toggle('placed', p.isPlaced);
+        card.classList.toggle('placed', !!p.isPlaced);
       }
     });
   }
@@ -268,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   btnRestart.addEventListener('click', () => {
     unlockAudio();
-    if (confirm("¿Deseas reiniciar el mosaico y comenzar de nuevo desde 0?")) {
+    if (confirm("¿Deseas reiniciar el mosaico y comenzar de nuevo?")) {
       initGame(true);
     }
   });
@@ -319,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Tips de gestos rotativos
+  // Tips rotativos
   const gestureTips = [
     { icon: "💖", text: "Para Geraldine con todo mi amor eterno" },
     { icon: "🤏", text: "Pellizca con 2 dedos para hacer Zoom" },
@@ -347,6 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
     deviceContainer.classList.add('iphone-framed');
   }
 
-  // Iniciar juego limpio desde cero
+  // Iniciar juego cargando progreso existente
   initGame(false);
 });
