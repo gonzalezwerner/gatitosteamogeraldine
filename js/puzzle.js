@@ -1,7 +1,6 @@
 /**
- * puzzle.js - Motor de Rompecabezas Desafiante y Auténtico (Modo Experto)
- * Sin ayudas visuales automáticas, rotación y encaje preciso (requiere rotar a 0°),
- * guardado 100% persistente y controles táctiles fluidos.
+ * puzzle.js - Motor con Tablero Limpio (Sin Siluetas), Guardado Universal para Geraldine
+ * y Encaje Matemático Perfecto 1:1 con la Fotografía Maestra.
  */
 
 class RomanticCatPuzzle {
@@ -31,7 +30,7 @@ class RomanticCatPuzzle {
     this.lastTapTime = 0;
     this.isCompleted = false;
 
-    // Fotografía real de los gatitos
+    // Fotografía real de los gatitos en 1200x1200
     this.catImage = new Image();
     this.catImageLoaded = false;
     this.catImage.src = 'img/romantic_cats.jpg';
@@ -54,9 +53,9 @@ class RomanticCatPuzzle {
     this.initialPinchDist = null;
     this.initialPinchZoom = 1;
 
-    // Calibración de dificultad real (Desafiante y satisfactorio)
-    this.snapToleranceDist = 34;
-    this.snapToleranceAngle = 25;
+    // Tolerancia de encaje (precisión matemática)
+    this.snapToleranceDist = 38;
+    this.snapToleranceAngle = 28;
 
     this.setupEvents();
     this.renderLoop = this.renderLoop.bind(this);
@@ -65,6 +64,8 @@ class RomanticCatPuzzle {
 
   loadLevel(levelData, isReset = false) {
     this.boardBaseSize = levelData.boardSize || 1200;
+    
+    // Generar las 700 piezas limpias
     this.pieces = levelData.pieces.map(p => ({
       id: p.id,
       name: p.name,
@@ -93,10 +94,9 @@ class RomanticCatPuzzle {
     this.resize();
 
     if (isReset) {
-      try {
-        localStorage.removeItem(this.storageKey);
-      } catch (e) {}
+      this.clearAllSaves();
     } else {
+      // Cargar progreso universal sin perder datos existentes
       this.loadProgress();
     }
 
@@ -108,6 +108,19 @@ class RomanticCatPuzzle {
     if (this.onProgressUpdate) {
       this.onProgressUpdate(placed, this.pieces.length);
     }
+  }
+
+  clearAllSaves() {
+    const keys = [
+      'gatitos_geraldine_save_final_v1',
+      'gatitos_geraldine_700_v1',
+      'gatitos_realistic_save',
+      'gatitos_save',
+      'gatitos_game_save'
+    ];
+    keys.forEach(k => {
+      try { localStorage.removeItem(k); } catch (e) {}
+    });
   }
 
   resetCamera() {
@@ -240,6 +253,10 @@ class RomanticCatPuzzle {
     ctx.restore();
   }
 
+  /**
+   * Tablero Limpio y Puro: SIN siluetas de gatos pre-dibujadas.
+   * Solo muestra el marco de terciopelo y la pista si el usuario la activa.
+   */
   drawBoard() {
     const ctx = this.boardCtx;
     ctx.clearRect(0, 0, this.boardCanvas.width, this.boardCanvas.height);
@@ -247,49 +264,31 @@ class RomanticCatPuzzle {
     ctx.save();
     this.applyCameraTransform(ctx);
 
+    // Marco exterior de terciopelo starlight
     ctx.strokeStyle = 'rgba(255, 117, 160, 0.35)';
     ctx.lineWidth = 3;
     ctx.strokeRect(8, 8, 1184, 1184);
 
-    const viewBounds = this.getViewportWorldBounds();
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = 'rgba(255, 117, 160, 0.22)';
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.02)';
-
+    // Solo dibujar silueta si el usuario activó la Pista Única
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
-      if (p.targetX < viewBounds.left || p.targetX > viewBounds.right || p.targetY < viewBounds.top || p.targetY > viewBounds.bottom) {
-        continue;
-      }
-
-      ctx.save();
-      ctx.translate(p.targetX, p.targetY);
-
-      ctx.beginPath();
-      const poly = p.polygon;
-      ctx.moveTo(poly[0].x, poly[0].y);
-      for (let j = 1; j < poly.length; j++) {
-        ctx.lineTo(poly[j].x, poly[j].y);
-      }
-      ctx.closePath();
-
-      if (p.isPlaced) {
-        ctx.fillStyle = 'rgba(255, 77, 141, 0.02)';
-        ctx.fill();
-      } else if (p.isHinted) {
-        // Solo la pista única se ilumina
+      if (p.isHinted) {
+        ctx.save();
+        ctx.translate(p.targetX, p.targetY);
+        ctx.beginPath();
+        const poly = p.polygon;
+        ctx.moveTo(poly[0].x, poly[0].y);
+        for (let j = 1; j < poly.length; j++) {
+          ctx.lineTo(poly[j].x, poly[j].y);
+        }
+        ctx.closePath();
         ctx.fillStyle = 'rgba(249, 214, 137, 0.45)';
         ctx.strokeStyle = '#f9d689';
         ctx.lineWidth = 2.5;
         ctx.stroke();
         ctx.fill();
-      } else {
-        // Silueta normal sin pistas automáticas (mantiene el desafío)
-        ctx.stroke();
-        ctx.fill();
+        ctx.restore();
       }
-
-      ctx.restore();
     }
 
     ctx.restore();
@@ -318,15 +317,23 @@ class RomanticCatPuzzle {
 
     const viewBounds = this.getViewportWorldBounds();
 
-    // 1. Dibujar piezas en el tablero
+    // 1. Dibujar piezas colocadas (encajadas exactamente)
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
-      if (p.currentX < -100 || p === this.selectedPiece) continue;
+      if (!p.isPlaced || p === this.selectedPiece) continue;
       if (p.currentX < viewBounds.left || p.currentX > viewBounds.right || p.currentY < viewBounds.top || p.currentY > viewBounds.bottom) continue;
       this.drawRealCatPiece(ctx, p, p.currentX, p.currentY, p.currentAngle, p.currentFlipped, false);
     }
 
-    // 2. Dibujar la pieza seleccionada arriba
+    // 2. Dibujar piezas sueltas en el tablero
+    for (let i = 0; i < this.pieces.length; i++) {
+      const p = this.pieces[i];
+      if (p.isPlaced || p.currentX < -100 || p === this.selectedPiece) continue;
+      if (p.currentX < viewBounds.left || p.currentX > viewBounds.right || p.currentY < viewBounds.top || p.currentY > viewBounds.bottom) continue;
+      this.drawRealCatPiece(ctx, p, p.currentX, p.currentY, p.currentAngle, p.currentFlipped, false);
+    }
+
+    // 3. Dibujar la pieza seleccionada arriba de todas con aura
     if (this.selectedPiece && this.selectedPiece.currentX > -100) {
       this.drawRealCatPiece(
         ctx,
@@ -344,6 +351,9 @@ class RomanticCatPuzzle {
     requestAnimationFrame(this.renderLoop);
   }
 
+  /**
+   * Renderizado Matemáticamente Perfecto 1:1 con la Fotografía Real
+   */
   drawRealCatPiece(ctx, piece, x, y, angle, flipped, isSelected) {
     ctx.save();
     ctx.translate(x, y);
@@ -362,6 +372,7 @@ class RomanticCatPuzzle {
     ctx.clip();
 
     if (this.catImageLoaded) {
+      // Mapeo matemático exacto: al estar en targetX, targetY se alinea al 100% con la fotografía
       ctx.drawImage(this.catImage, -piece.targetX, -piece.targetY, 1200, 1200);
     } else {
       ctx.fillStyle = piece.color;
@@ -372,14 +383,17 @@ class RomanticCatPuzzle {
     if (isSelected) {
       ctx.strokeStyle = '#ffd689';
       ctx.lineWidth = 3.0;
+      ctx.stroke();
     } else if (piece.isPlaced) {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-      ctx.lineWidth = 1.0;
+      // Las piezas colocadas se integran sin bordes gruesos para formar la imagen pura
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
+      ctx.lineWidth = 0.6;
+      ctx.stroke();
     } else {
-      ctx.strokeStyle = 'rgba(255, 117, 160, 0.65)';
+      ctx.strokeStyle = 'rgba(255, 117, 160, 0.7)';
       ctx.lineWidth = 1.4;
+      ctx.stroke();
     }
-    ctx.stroke();
 
     ctx.restore();
   }
@@ -551,7 +565,6 @@ class RomanticCatPuzzle {
       handlePointerUp();
     }, { passive: false });
 
-    // Doble toque para rotar 45°
     canvas.addEventListener('click', () => {
       const now = Date.now();
       if (now - this.lastTapTime < 320 && this.selectedPiece) {
@@ -612,9 +625,6 @@ class RomanticCatPuzzle {
     this.saveProgress(false);
   }
 
-  /**
-   * Encaje que requiere rotación exacta a 0° y posición correcta
-   */
   trySnapPiece(piece) {
     if (!piece) return false;
 
@@ -623,7 +633,6 @@ class RomanticCatPuzzle {
     const isAngleCorrect = (angleDiff <= this.snapToleranceAngle || angleDiff >= 360 - this.snapToleranceAngle);
     const flipMatches = (piece.currentFlipped === piece.targetFlipped);
 
-    // Requiere estar cerca Y tener la orientación correcta (0°)
     if (dist <= this.snapToleranceDist && isAngleCorrect && flipMatches) {
       piece.currentX = piece.targetX;
       piece.currentY = piece.targetY;
@@ -644,7 +653,7 @@ class RomanticCatPuzzle {
       }
 
       if (this.audio) {
-        this.audio.playPieceSnapChime(1.0 + (this.getPlacedCount() / this.pieces.length) * 0.5);
+        this.audio.playKittenSnapSound(this.getPlacedCount());
       }
 
       if (navigator.vibrate) {
@@ -771,37 +780,64 @@ class RomanticCatPuzzle {
     }
   }
 
+  /**
+   * Carga universal: detecta y restaura partidas guardadas bajo cualquier clave previa
+   */
   loadProgress() {
     try {
-      const raw = localStorage.getItem(this.storageKey);
+      const candidateKeys = [
+        'gatitos_geraldine_save_final_v1',
+        'gatitos_geraldine_700_v1',
+        'gatitos_realistic_save',
+        'gatitos_save',
+        'gatitos_game_save'
+      ];
+
+      let raw = null;
+      for (const k of candidateKeys) {
+        const item = localStorage.getItem(k);
+        if (item) {
+          try {
+            const parsed = JSON.parse(item);
+            if (parsed && (Array.isArray(parsed.pieces) || Array.isArray(parsed.placedPieces))) {
+              raw = item;
+              break;
+            }
+          } catch (e) {}
+        }
+      }
+
       if (!raw) return false;
       const saveData = JSON.parse(raw);
-      if (!saveData || !Array.isArray(saveData.pieces)) return false;
+      const pieceList = saveData.pieces || saveData.placedPieces;
+      if (!Array.isArray(pieceList)) return false;
 
       if (typeof saveData.hintsLeft === 'number') this.hintsLeft = saveData.hintsLeft;
       if (typeof saveData.cameraZoom === 'number') this.cameraZoom = saveData.cameraZoom;
       if (typeof saveData.cameraPanX === 'number') this.cameraPanX = saveData.cameraPanX;
       if (typeof saveData.cameraPanY === 'number') this.cameraPanY = saveData.cameraPanY;
 
-      saveData.pieces.forEach(saved => {
+      pieceList.forEach(saved => {
         const p = this.pieces.find(item => item.id === saved.id);
         if (p) {
-          p.isPlaced = !!saved.isPlaced;
-          p.currentX = saved.currentX;
-          p.currentY = saved.currentY;
-          p.currentAngle = saved.currentAngle || 0;
-          p.currentFlipped = !!saved.currentFlipped;
-
-          if (p.isPlaced) {
+          if (saved.isPlaced) {
+            p.isPlaced = true;
             p.currentX = p.targetX;
             p.currentY = p.targetY;
-            p.currentAngle = p.targetAngle;
-            p.currentFlipped = p.targetFlipped;
+            p.currentAngle = 0;
+            p.currentFlipped = false;
+          } else if (typeof saved.currentX === 'number' && saved.currentX > -100) {
+            p.currentX = saved.currentX;
+            p.currentY = saved.currentY;
+            p.currentAngle = saved.currentAngle || 0;
+            p.currentFlipped = !!saved.currentFlipped;
           }
         }
       });
 
       this.updateHintButtonUI();
+      // Guardar bajo la clave principal para persistencia futura
+      this.saveProgress(false);
       return true;
     } catch (e) {
       console.warn("No se pudo cargar el progreso", e);
@@ -828,7 +864,7 @@ class RomanticCatPuzzle {
           const screenX = (p.targetX - this.boardBaseSize / 2) * effScale + cw / 2 + this.cameraPanX;
           const screenY = (p.targetY - this.boardBaseSize / 2) * effScale + ch / 2 + this.cameraPanY;
           if (this.particleEngine) this.particleEngine.createPieceSnapBurst(screenX, screenY, p.color);
-          if (this.audio) this.audio.playPieceSnapChime(1.0 + (idx / this.pieces.length) * 0.4);
+          if (this.audio) this.audio.playKittenSnapSound(idx);
         }
 
         if (idx % 15 === 0 || idx === this.pieces.length - 1) {
