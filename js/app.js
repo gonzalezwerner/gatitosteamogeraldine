@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador para Geraldine con Acceso al 100% de las 700 Piezas en Bandeja
+ * app.js - Orquestador para Geraldine con Bandeja Limpia (Sin Números en las Piezas)
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -127,20 +127,18 @@ document.addEventListener('DOMContentLoaded', () => {
     return [...shuffled, ...placed];
   }
 
-  // 4. Construir Bandeja con TODAS las 700 piezas accesibles
+  // 4. Construir Bandeja Limpia (SIN NÚMEROS, SOLO LA PIEZA PURA)
   function buildTray(pieces) {
     piecesTray.innerHTML = '';
     const fragment = document.createDocumentFragment();
 
     const displayList = getShuffledPieces(pieces);
 
-    // Cargar todas las piezas para que Geraldine tenga acceso al 100% de los gatitos
     for (let i = 0; i < displayList.length; i++) {
       const p = displayList[i];
       const card = document.createElement('div');
       card.className = 'tray-cat-card' + (p.isPlaced ? ' placed' : '');
       card.id = `tray-card-${p.id}`;
-      card.title = p.name;
       card.setAttribute('role', 'listitem');
       card.setAttribute('tabindex', '0');
 
@@ -150,12 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
       miniCanvas.height = 54;
       renderRealPieceThumbnail(miniCanvas, p);
 
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'tray-cat-name';
-      nameSpan.textContent = p.name;
-
       card.appendChild(miniCanvas);
-      card.appendChild(nameSpan);
 
       card.addEventListener('pointerdown', (e) => {
         e.stopPropagation();
@@ -174,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.clearRect(0, 0, 54, 54);
     ctx.save();
     ctx.translate(27, 27);
-    ctx.scale(0.8, 0.8);
+    ctx.scale(0.88, 0.88);
 
     ctx.beginPath();
     const poly = piece.polygon;
@@ -195,8 +188,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     ctx.restore();
 
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.75)';
-    ctx.lineWidth = 1.8;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+    ctx.lineWidth = 1.6;
     ctx.stroke();
 
     ctx.restore();

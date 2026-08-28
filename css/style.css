@@ -567,7 +567,7 @@ html, body {
   font-weight: 500;
 }
 
-/* Romantic Toast Message: Sleek Non-Obstructive Top Capsule */
+/* Romantic Toast Message */
 .ios-toast {
   position: absolute;
   top: 8px;
@@ -599,7 +599,7 @@ html, body {
   transform: translateX(-50%) translateY(0);
 }
 
-/* iOS Bottom Sheet Tray */
+/* iOS Bottom Sheet Tray (Kitten Drawer) */
 .ios-bottom-sheet {
   background: linear-gradient(180deg, rgba(28, 12, 42, 0.96) 0%, rgba(14, 5, 22, 0.98) 100%);
   border-top: 1px solid var(--border-glass);
@@ -666,15 +666,15 @@ html, body {
   align-items: center;
 }
 
+/* Sleek Glowing Glass Card for Pure Cat Pieces (NO NUMBERS) */
 .tray-cat-card {
-  width: 62px;
-  height: 62px;
-  min-width: 62px;
+  width: 58px;
+  height: 58px;
+  min-width: 58px;
   border-radius: var(--radius-card);
   background: rgba(48, 20, 68, 0.55);
   border: 1.5px solid rgba(255, 117, 160, 0.35);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
@@ -700,24 +700,13 @@ html, body {
 }
 
 .tray-cat-canvas {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
   display: block;
 }
 
 .tray-cat-name {
-  position: absolute;
-  bottom: 2px;
-  font-size: 8px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-align: center;
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding: 0 2px;
-  background: rgba(14, 5, 22, 0.6);
+  display: none !important;
 }
 
 /* iOS Home Bar */
