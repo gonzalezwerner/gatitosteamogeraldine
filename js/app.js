@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador para Geraldine con Preloader 3D de Three.js y Guardado Robusto
+ * app.js - Orquestador para Geraldine con Audio Totalmente Desbloqueado
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -42,6 +42,16 @@ document.addEventListener('DOMContentLoaded', () => {
   let puzzle = null;
   let particleEngine = null;
   let cinematic = null;
+
+  // Desbloqueo inmediato de audio en iOS y navegadores
+  function unlockAudio() {
+    if (window.romanticAudio) {
+      window.romanticAudio.unlock();
+    }
+  }
+  window.addEventListener('pointerdown', unlockAudio, { passive: true });
+  window.addEventListener('touchstart', unlockAudio, { passive: true });
+  window.addEventListener('click', unlockAudio, { passive: true });
 
   // 1. Inicializar Preloader 3D Cósmico con Three.js
   const preloader = new Romantic3DPreloader({
@@ -192,16 +202,6 @@ document.addEventListener('DOMContentLoaded', () => {
       target.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
     }
   }
-
-  // 5. Gestión de Audio
-  let audioUnlocked = false;
-  function unlockAudio() {
-    if (!audioUnlocked) {
-      window.romanticAudio.init();
-      audioUnlocked = true;
-    }
-  }
-  window.addEventListener('pointerdown', unlockAudio, { once: true });
 
   // 6. Botones y Eventos
   if (btnHelp) {
