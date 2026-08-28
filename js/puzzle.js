@@ -1,6 +1,5 @@
 /**
- * puzzle.js - Motor con Tablero Limpio (Sin Siluetas), Guardado Universal para Geraldine
- * y Encaje Matemático Perfecto 1:1 con la Fotografía Maestra.
+ * puzzle.js - Motor de Mosaico Puro: 0 Líneas en Piezas Colocadas (Fotografía 100% Continua y Pura)
  */
 
 class RomanticCatPuzzle {
@@ -53,7 +52,7 @@ class RomanticCatPuzzle {
     this.initialPinchDist = null;
     this.initialPinchZoom = 1;
 
-    // Tolerancia de encaje (precisión matemática)
+    // Tolerancia de encaje
     this.snapToleranceDist = 38;
     this.snapToleranceAngle = 28;
 
@@ -65,7 +64,6 @@ class RomanticCatPuzzle {
   loadLevel(levelData, isReset = false) {
     this.boardBaseSize = levelData.boardSize || 1200;
     
-    // Generar las 700 piezas limpias
     this.pieces = levelData.pieces.map(p => ({
       id: p.id,
       name: p.name,
@@ -96,7 +94,6 @@ class RomanticCatPuzzle {
     if (isReset) {
       this.clearAllSaves();
     } else {
-      // Cargar progreso universal sin perder datos existentes
       this.loadProgress();
     }
 
@@ -254,8 +251,7 @@ class RomanticCatPuzzle {
   }
 
   /**
-   * Tablero Limpio y Puro: SIN siluetas de gatos pre-dibujadas.
-   * Solo muestra el marco de terciopelo y la pista si el usuario la activa.
+   * Tablero Puro: 0 líneas de siluetas de fondo
    */
   drawBoard() {
     const ctx = this.boardCtx;
@@ -264,12 +260,12 @@ class RomanticCatPuzzle {
     ctx.save();
     this.applyCameraTransform(ctx);
 
-    // Marco exterior de terciopelo starlight
+    // Marco exterior limpio
     ctx.strokeStyle = 'rgba(255, 117, 160, 0.35)';
     ctx.lineWidth = 3;
     ctx.strokeRect(8, 8, 1184, 1184);
 
-    // Solo dibujar silueta si el usuario activó la Pista Única
+    // Solo mostrar silueta si el usuario gasta la Pista Única
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
       if (p.isHinted) {
@@ -317,7 +313,7 @@ class RomanticCatPuzzle {
 
     const viewBounds = this.getViewportWorldBounds();
 
-    // 1. Dibujar piezas colocadas (encajadas exactamente)
+    // 1. Dibujar piezas colocadas (SIN LÍNEAS - FOTOGRAFÍA PURA Y CONTINUA)
     for (let i = 0; i < this.pieces.length; i++) {
       const p = this.pieces[i];
       if (!p.isPlaced || p === this.selectedPiece) continue;
@@ -352,7 +348,9 @@ class RomanticCatPuzzle {
   }
 
   /**
-   * Renderizado Matemáticamente Perfecto 1:1 con la Fotografía Real
+   * Renderizado de Piezas:
+   * - Si está colocada (isPlaced): 0 LÍNEAS, 0 BORDES (Fotografía pura sin cortes).
+   * - Si está seleccionada / arrastrándose: Borde dorado brillante para ver la pieza.
    */
   drawRealCatPiece(ctx, piece, x, y, angle, flipped, isSelected) {
     ctx.save();
@@ -372,7 +370,6 @@ class RomanticCatPuzzle {
     ctx.clip();
 
     if (this.catImageLoaded) {
-      // Mapeo matemático exacto: al estar en targetX, targetY se alinea al 100% con la fotografía
       ctx.drawImage(this.catImage, -piece.targetX, -piece.targetY, 1200, 1200);
     } else {
       ctx.fillStyle = piece.color;
@@ -380,20 +377,17 @@ class RomanticCatPuzzle {
     }
     ctx.restore();
 
+    // Bordes: SOLO para piezas sueltas o seleccionadas (0 LÍNEAS PARA PIEZAS COLOCADAS)
     if (isSelected) {
       ctx.strokeStyle = '#ffd689';
       ctx.lineWidth = 3.0;
       ctx.stroke();
-    } else if (piece.isPlaced) {
-      // Las piezas colocadas se integran sin bordes gruesos para formar la imagen pura
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-      ctx.lineWidth = 0.6;
-      ctx.stroke();
-    } else {
-      ctx.strokeStyle = 'rgba(255, 117, 160, 0.7)';
+    } else if (!piece.isPlaced) {
+      ctx.strokeStyle = 'rgba(255, 117, 160, 0.75)';
       ctx.lineWidth = 1.4;
       ctx.stroke();
     }
+    // Si piece.isPlaced es true -> NO SE DIBUJA NINGUNA LÍNEA
 
     ctx.restore();
   }
@@ -780,9 +774,6 @@ class RomanticCatPuzzle {
     }
   }
 
-  /**
-   * Carga universal: detecta y restaura partidas guardadas bajo cualquier clave previa
-   */
   loadProgress() {
     try {
       const candidateKeys = [
@@ -836,7 +827,6 @@ class RomanticCatPuzzle {
       });
 
       this.updateHintButtonUI();
-      // Guardar bajo la clave principal para persistencia futura
       this.saveProgress(false);
       return true;
     } catch (e) {
