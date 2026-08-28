@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador para Geraldine con Bandeja Mezclada (Desafío Auténtico) y UI Pulida
+ * app.js - Orquestador para Geraldine con Acceso al 100% de las 700 Piezas en Bandeja
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -111,13 +111,11 @@ document.addEventListener('DOMContentLoaded', () => {
     pieceControlsOverlay.classList.remove('visible');
   }
 
-  // Pseudo-random deterministic shuffle para que la bandeja esté mezclada como un rompecabezas real
+  // Pseudo-random deterministic shuffle para mezclar las 700 piezas
   function getShuffledPieces(pieces) {
-    // Tomar piezas no colocadas primero
     const unplaced = pieces.filter(p => !p.isPlaced);
     const placed = pieces.filter(p => p.isPlaced);
 
-    // Semilla pseudo-aleatoria para dispersar piezas por todo el rompecabezas
     const shuffled = [...unplaced];
     for (let i = shuffled.length - 1; i > 0; i--) {
       const j = (i * 37 + 11) % (i + 1);
@@ -129,15 +127,15 @@ document.addEventListener('DOMContentLoaded', () => {
     return [...shuffled, ...placed];
   }
 
-  // 4. Construir Bandeja con Miniaturas Mezcladas
+  // 4. Construir Bandeja con TODAS las 700 piezas accesibles
   function buildTray(pieces) {
     piecesTray.innerHTML = '';
     const fragment = document.createDocumentFragment();
 
     const displayList = getShuffledPieces(pieces);
-    const limit = Math.min(displayList.length, 80);
 
-    for (let i = 0; i < limit; i++) {
+    // Cargar todas las piezas para que Geraldine tenga acceso al 100% de los gatitos
+    for (let i = 0; i < displayList.length; i++) {
       const p = displayList[i];
       const card = document.createElement('div');
       card.className = 'tray-cat-card' + (p.isPlaced ? ' placed' : '');
