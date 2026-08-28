@@ -1,5 +1,5 @@
 /**
- * app.js - Orquestador para Geraldine con Bandeja Limpia (Sin Números en las Piezas)
+ * app.js - Orquestador para Geraldine con Eliminación Automática de Piezas Colocadas en la Bandeja
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -111,10 +111,9 @@ document.addEventListener('DOMContentLoaded', () => {
     pieceControlsOverlay.classList.remove('visible');
   }
 
-  // Pseudo-random deterministic shuffle para mezclar las 700 piezas
+  // Pseudo-random deterministic shuffle para mezclar las piezas no colocadas
   function getShuffledPieces(pieces) {
     const unplaced = pieces.filter(p => !p.isPlaced);
-    const placed = pieces.filter(p => p.isPlaced);
 
     const shuffled = [...unplaced];
     for (let i = shuffled.length - 1; i > 0; i--) {
@@ -124,10 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
       shuffled[j] = temp;
     }
 
-    return [...shuffled, ...placed];
+    return shuffled;
   }
 
-  // 4. Construir Bandeja Limpia (SIN NÚMEROS, SOLO LA PIEZA PURA)
+  // 4. Construir Bandeja con SOLO las piezas que NO han sido colocadas
   function buildTray(pieces) {
     piecesTray.innerHTML = '';
     const fragment = document.createDocumentFragment();
@@ -137,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
     for (let i = 0; i < displayList.length; i++) {
       const p = displayList[i];
       const card = document.createElement('div');
-      card.className = 'tray-cat-card' + (p.isPlaced ? ' placed' : '');
+      card.className = 'tray-cat-card';
       card.id = `tray-card-${p.id}`;
       card.setAttribute('role', 'listitem');
       card.setAttribute('tabindex', '0');
@@ -160,6 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     piecesTray.appendChild(fragment);
+    trayCount.textContent = displayList.length;
   }
 
   function renderRealPieceThumbnail(canvas, piece) {
@@ -195,13 +195,29 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.restore();
   }
 
+  // Elimina de forma permanente las piezas colocadas de la bandeja inferior
   function updateTrayCards() {
     puzzle.pieces.forEach(p => {
-      const card = document.getElementById(`tray-card-${p.id}`);
-      if (card) {
-        card.classList.toggle('placed', !!p.isPlaced);
+      if (p.isPlaced) {
+        const card = document.getElementById(`tray-card-${p.id}`);
+        if (card) {
+          card.style.transition = 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.3)';
+          card.style.width = '0px';
+          card.style.minWidth = '0px';
+          card.style.margin = '0px';
+          card.style.padding = '0px';
+          card.style.pointerEvents = 'none';
+          setTimeout(() => {
+            if (card.parentElement) card.remove();
+          }, 300);
+        }
       }
     });
+
+    const unplacedCount = puzzle.pieces.filter(p => !p.isPlaced).length;
+    trayCount.textContent = unplacedCount;
   }
 
   function highlightTrayCard(pieceId) {
