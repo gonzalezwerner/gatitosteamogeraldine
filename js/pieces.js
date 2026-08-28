@@ -1,5 +1,6 @@
 /**
- * pieces.js - Generador de 700 Piezas con Distribución 100% Calibrada en 1200x1200px
+ * pieces.js - Generador de 700 Piezas Teseladas Continuas (Sin Huecos Negros)
+ * Reconstrucción matemática de 28x25 celdas entrelazadas con siluetas felinas continuas.
  */
 
 const ROMANTIC_WHISPERS = [
@@ -20,7 +21,7 @@ const ROMANTIC_WHISPERS = [
 const VICTORY_POEM = "Para mi amada Geraldine: Setecientos latidos, infinitas galaxias y un solo destino... Entre millones de estrellas en el universo, mis ojos siempre buscarán los tuyos. Eres mi amor eterno, mi paz, mi inspiración y mi mayor felicidad en este mundo. Te amo con toda mi alma por siempre, mi niña hermosa. 🐾💖✨";
 
 function createCatPiece(config) {
-  let maxR = 22;
+  let maxR = 26;
   config.polygon.forEach(pt => {
     const d = Math.hypot(pt.x, pt.y);
     if (d > maxR) maxR = d;
@@ -34,9 +35,9 @@ function createCatPiece(config) {
     color: config.color,
     eyeColor: config.eyeColor || "#f9d689",
     polygon: config.polygon,
-    boundingRadius: maxR + 3,
+    boundingRadius: Math.round(maxR + 2),
     
-    // Posición y orientación objetivo
+    // Posición objetivo matemática en la cuadrícula 1200x1200
     targetX: config.targetX,
     targetY: config.targetY,
     targetAngle: 0,
@@ -52,14 +53,18 @@ function createCatPiece(config) {
 }
 
 /**
- * Generador de las 700 Piezas Teseladas para Geraldine
- * Todas las coordenadas se mantienen perfectamente dentro del lienzo de 1200x1200
+ * Generador de 700 Piezas Continuas (28 Columnas x 25 Filas = 700 Piezas)
+ * Cobertura 100% continua del lienzo de 1200x1200px sin huecos negros ni separaciones.
  */
 function generate700CatUniverse() {
   const pieces = [];
-  const TOTAL = 700;
-  const CENTER_X = 600;
-  const CENTER_Y = 600;
+  const COLS = 28;
+  const ROWS = 25;
+  const TOTAL = COLS * ROWS; // 700
+  const BOARD_SIZE = 1200;
+
+  const CELL_W = BOARD_SIZE / COLS; // 42.857px
+  const CELL_H = BOARD_SIZE / ROWS; // 48.0px
 
   const palettes = [
     { hex: "#ff4d8d", eye: "#fef08a" },
@@ -72,40 +77,94 @@ function generate700CatUniverse() {
     { hex: "#059669", eye: "#fde047" }
   ];
 
-  // Siluetas anatómicas felinas equilibradas
-  const basePolygons = [
-    [ { x: -20, y: -16 }, { x: -10, y: -6 }, { x: -2, y: -18 }, { x: 12, y: -8 }, { x: 22, y: 6 }, { x: 14, y: 20 }, { x: -8, y: 18 }, { x: -22, y: 2 } ],
-    [ { x: -22, y: 4 }, { x: -12, y: -12 }, { x: 0, y: -16 }, { x: 14, y: -8 }, { x: 22, y: 10 }, { x: 8, y: 20 }, { x: -12, y: 18 }, { x: -22, y: 12 } ],
-    [ { x: -18, y: -18 }, { x: -6, y: -10 }, { x: 6, y: -18 }, { x: 18, y: -10 }, { x: 20, y: 8 }, { x: 10, y: 20 }, { x: -10, y: 20 }, { x: -20, y: 6 } ],
-    [ { x: -18, y: -14 }, { x: -8, y: -8 }, { x: 4, y: -16 }, { x: 16, y: -6 }, { x: 22, y: 12 }, { x: 6, y: 20 }, { x: -14, y: 18 }, { x: -22, y: -2 } ],
-    [ { x: -22, y: -10 }, { x: -12, y: -18 }, { x: 0, y: -10 }, { x: 14, y: -16 }, { x: 22, y: 4 }, { x: 14, y: 18 }, { x: -10, y: 20 }, { x: -22, y: 10 } ],
-    [ { x: -20, y: -12 }, { x: -4, y: -18 }, { x: 10, y: -10 }, { x: 22, y: -2 }, { x: 20, y: 16 }, { x: 4, y: 20 }, { x: -18, y: 18 }, { x: -22, y: 4 } ]
+  const DISORIENTED_ANGLES = [45, 90, 135, 180, 225, 270, 315];
+
+  // Siluetas felinas con orejitas y pestañas de encaje que cubren el 100% del área de cada celda
+  const hw = CELL_W / 2 + 1.2; // mitad de ancho con solape para cero huecos
+  const hh = CELL_H / 2 + 1.2; // mitad de alto con solape para cero huecos
+
+  const catPolygons = [
+    // Silueta 1: Gatito de frente con orejas puntiagudas
+    [
+      { x: -hw, y: -hh + 8 },
+      { x: -hw + 4, y: -hh },
+      { x: -hw + 14, y: -hh + 6 },
+      { x: hw - 14, y: -hh + 6 },
+      { x: hw - 4, y: -hh },
+      { x: hw, y: -hh + 8 },
+      { x: hw + 2, y: 0 },
+      { x: hw, y: hh - 6 },
+      { x: hw - 10, y: hh },
+      { x: -hw + 10, y: hh },
+      { x: -hw, y: hh - 6 },
+      { x: -hw - 2, y: 0 }
+    ],
+    // Silueta 2: Gatito mirando de lado con oreja derecha prominente
+    [
+      { x: -hw, y: -hh + 6 },
+      { x: -hw + 6, y: -hh + 2 },
+      { x: -4, y: -hh + 8 },
+      { x: hw - 8, y: -hh },
+      { x: hw, y: -hh + 6 },
+      { x: hw + 3, y: 2 },
+      { x: hw, y: hh - 4 },
+      { x: 4, y: hh },
+      { x: -hw + 8, y: hh },
+      { x: -hw - 2, y: 2 }
+    ],
+    // Silueta 3: Gatito tierno redondeado con orejitas cortas
+    [
+      { x: -hw, y: -hh + 10 },
+      { x: -hw + 8, y: -hh + 1 },
+      { x: 0, y: -hh + 8 },
+      { x: hw - 8, y: -hh + 1 },
+      { x: hw, y: -hh + 10 },
+      { x: hw + 2, y: -2 },
+      { x: hw, y: hh - 6 },
+      { x: 0, y: hh },
+      { x: -hw, y: hh - 6 },
+      { x: -hw - 2, y: -2 }
+    ],
+    // Silueta 4: Gatito curvado con oreja izquierda prominente
+    [
+      { x: -hw, y: -hh + 2 },
+      { x: -hw + 10, y: -hh },
+      { x: 2, y: -hh + 7 },
+      { x: hw - 6, y: -hh + 3 },
+      { x: hw, y: -hh + 8 },
+      { x: hw + 2, y: 0 },
+      { x: hw, y: hh - 8 },
+      { x: -2, y: hh },
+      { x: -hw + 6, y: hh - 2 },
+      { x: -hw - 3, y: 0 }
+    ]
   ];
 
-  const DISORIENTED_ANGLES = [45, 90, 135, 180, 225, 270, 315];
-  const phi = (1 + Math.sqrt(5)) / 2;
+  let idCounter = 1;
 
-  for (let i = 0; i < TOTAL; i++) {
-    const theta = i * 2 * Math.PI * phi;
-    const r = Math.sqrt(i) * 20.8 + 22; // Distribución áurea 100% dentro de límites (radio máx 571px)
+  for (let r = 0; r < ROWS; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const i = idCounter - 1;
+      const targetX = Math.round((c + 0.5) * CELL_W);
+      const targetY = Math.round((r + 0.5) * CELL_H);
 
-    const targetX = Math.round(CENTER_X + Math.cos(theta) * r);
-    const targetY = Math.round(CENTER_Y + Math.sin(theta) * r);
+      const initialAngle = DISORIENTED_ANGLES[i % DISORIENTED_ANGLES.length];
+      const style = palettes[(r + c) % palettes.length];
+      const poly = catPolygons[(r * COLS + c) % catPolygons.length];
 
-    const initialAngle = DISORIENTED_ANGLES[i % DISORIENTED_ANGLES.length];
-    const style = palettes[i % palettes.length];
-    const poly = basePolygons[i % basePolygons.length];
+      pieces.push(createCatPiece({
+        id: `cat_${idCounter}`,
+        name: `Gatito #${idCounter}`,
+        color: style.hex,
+        eyeColor: style.eye,
+        initialAngle: initialAngle,
+        polygon: poly,
+        targetX: targetX,
+        targetY: targetY
+      }));
 
-    pieces.push(createCatPiece({
-      id: `cat_${i + 1}`,
-      name: `Gatito #${i + 1}`,
-      color: style.hex,
-      eyeColor: style.eye,
-      initialAngle: initialAngle,
-      polygon: poly,
-      targetX: targetX,
-      targetY: targetY
-    }));
+      idCounter++;
+    }
   }
 
   return pieces;

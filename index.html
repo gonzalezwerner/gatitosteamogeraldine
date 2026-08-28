@@ -47,70 +47,73 @@
   <!-- Ambient Sakura Petals Canvas -->
   <canvas id="ambient-canvas"></canvas>
 
-  <!-- iPhone 17 Pro Fullscreen App Container -->
+  <!-- iPhone Fullscreen App Container -->
   <div class="ios-app-container" id="device-container">
     
-    <!-- Dynamic Island (iOS Interactive Header Pill) -->
-    <div class="dynamic-island-wrapper">
-      <div class="dynamic-island" id="dynamic-island" role="button" aria-label="Dynamic Island Gatitos">
-        <div class="island-left">
-          <span class="island-icon">🐾</span>
-          <span class="island-title">Geraldine</span>
+    <!-- Top Header Area -->
+    <header class="ios-header-area">
+      <!-- Dynamic Island (iOS Interactive Header Pill) -->
+      <div class="dynamic-island-wrapper">
+        <div class="dynamic-island" id="dynamic-island" role="button" aria-label="Dynamic Island Gatitos">
+          <div class="island-left">
+            <span class="island-icon">🐾</span>
+            <span class="island-title">Geraldine</span>
+          </div>
+          <div class="island-pill-dot"></div>
+          <div class="island-right">
+            <span class="island-heart">💖</span>
+            <span class="island-progress" id="island-progress">0%</span>
+          </div>
         </div>
-        <div class="island-pill-dot"></div>
-        <div class="island-right">
-          <span class="island-heart">💖</span>
-          <span class="island-progress" id="island-progress">0%</span>
+      </div>
+
+      <!-- Apple-Style Clean Toolbar -->
+      <nav class="ios-navbar" aria-label="Barra de herramientas">
+        <div class="nav-left">
+          <button id="btn-help" class="ios-btn-circle" aria-label="Instrucciones" title="Cómo Jugar">
+            <span>❓</span>
+          </button>
+          <span class="nav-app-name">Gatitos</span>
         </div>
-      </div>
-    </div>
+        <div class="nav-right">
+          <button id="btn-save" class="ios-btn-pill" aria-label="Guardar Partida" title="Guardar">
+            <span class="btn-icon-text">💾 Guardar</span>
+          </button>
+          <button id="btn-hint" class="ios-btn-pill" aria-label="Pista Única" title="Pista Única">
+            <span class="btn-icon-text" id="hint-text">✨ Pista (1)</span>
+          </button>
+          <button id="btn-sound" class="ios-btn-circle" aria-label="Alternar Sonido" title="Sonido">
+            <span id="sound-emoji">🔊</span>
+          </button>
+          <button id="btn-restart" class="ios-btn-circle" aria-label="Reiniciar Mosaico" title="Reiniciar">
+            <span>🔄</span>
+          </button>
+        </div>
+      </nav>
 
-    <!-- Apple-Style Frosted Navigation Bar -->
-    <nav class="ios-navbar" aria-label="Barra de herramientas">
-      <div class="nav-left">
-        <span class="nav-app-name">Gatitos • Geraldine</span>
-      </div>
-      <div class="nav-right">
-        <button id="btn-help" class="ios-btn-circle" aria-label="Instrucciones y Gestos" title="Cómo Jugar">
-          <span>❓</span>
-        </button>
-        <button id="btn-save" class="ios-btn-pill" aria-label="Guardar Partida">
-          <span class="btn-icon-text">💾 Guardar</span>
-        </button>
-        <button id="btn-hint" class="ios-btn-pill" aria-label="Pista Única">
-          <span class="btn-icon-text" id="hint-text">✨ Pista (1)</span>
-        </button>
-        <button id="btn-sound" class="ios-btn-circle" aria-label="Alternar Sonido" title="Sonido">
-          <span id="sound-emoji">🔊</span>
-        </button>
-        <button id="btn-restart" class="ios-btn-circle" aria-label="Reiniciar Mosaico" title="Reiniciar">
-          <span>🔄</span>
-        </button>
-      </div>
-    </nav>
-
-    <!-- Status & Tactile Progress Banner -->
-    <section class="status-section" aria-live="polite">
-      <div class="ios-progress-track">
-        <div class="ios-progress-fill" id="progress-bar-fill"></div>
-      </div>
-      <div class="status-caption" id="status-text">
-        <span class="heart-pulse">💗</span> Toca un gatito abajo y arrástralo a su silueta...
-      </div>
-    </section>
+      <!-- Status & Tactile Progress Banner -->
+      <section class="status-section" aria-live="polite">
+        <div class="ios-progress-track">
+          <div class="ios-progress-fill" id="progress-bar-fill"></div>
+        </div>
+        <div class="status-caption" id="status-text">
+          <span class="heart-pulse">💗</span> Para Geraldine con amor: toca un gatito abajo...
+        </div>
+      </section>
+    </header>
 
     <!-- Main Realistic Canvas Viewport -->
     <main class="puzzle-main" id="puzzle-viewport">
-      <!-- Master Background Canvas (Hidden during game, revealed at 100%) -->
+      <!-- Master Background Canvas -->
       <canvas id="bg-artwork-canvas"></canvas>
 
       <!-- Board Interlocking Outlines Canvas -->
       <canvas id="board-canvas"></canvas>
       
-      <!-- Interactive Puzzle Pieces Canvas (Photorealistic Image Textured Cats) -->
+      <!-- Interactive Puzzle Pieces Canvas -->
       <canvas id="game-canvas"></canvas>
       
-      <!-- Particle Effects Canvas (Sakura, Sparkles, Snap Waves) -->
+      <!-- Particle Effects Canvas -->
       <canvas id="fx-canvas"></canvas>
 
       <!-- Floating iOS Zoom Controls -->
@@ -120,146 +123,140 @@
         <button id="btn-zoom-out" class="ios-zoom-btn" aria-label="Alejar Zoom">➖</button>
       </aside>
 
-      <!-- Piece Quick-Action Toolbar (Girar & Voltear) -->
-      <div class="ios-piece-actions" id="piece-controls-overlay" role="toolbar" aria-label="Acciones de pieza seleccionada">
-        <button id="btn-rotate-left" class="ios-action-chip" aria-label="Girar 45 grados a la izquierda">↺ 45°</button>
-        <button id="btn-rotate-right" class="ios-action-chip" aria-label="Girar 45 grados a la derecha">45° ↻</button>
-        <button id="btn-flip" class="ios-action-chip" aria-label="Voltear espejo">🪞 Voltear</button>
-      </div>
-
-      <!-- Quick Gesture On-Screen Hints Banner (Tips rotativos) -->
+      <!-- Quick Gesture Tip Overlay -->
       <div class="gesture-quick-bar" id="gesture-quick-bar">
-        <span class="gesture-icon">🤏</span>
-        <span class="gesture-text" id="gesture-tip-text">Pellizca con 2 dedos para hacer Zoom</span>
+        <span class="gesture-icon">💖</span>
+        <span class="gesture-text" id="gesture-tip-text">Para Geraldine con todo mi amor eterno</span>
       </div>
 
-      <!-- Romantic Snap Whisper Toast -->
-      <div class="ios-toast" id="romantic-toast" role="status">
-        <span class="toast-emoji">💖</span>
-        <span class="toast-label" id="toast-message">Geraldine, en cada vida te buscaría...</span>
+      <!-- Romantic Toast -->
+      <div class="ios-toast" id="romantic-toast">
+        <span class="toast-heart">💌</span>
+        <span class="toast-message" id="toast-message">Geraldine, te amo con toda mi alma...</span>
+      </div>
+
+      <!-- Floating Piece Manipulation Toolbar -->
+      <div class="ios-piece-actions" id="piece-controls-overlay" aria-label="Controles de pieza">
+        <button id="btn-rotate-left" class="ios-action-chip" aria-label="Rotar Izquierda">↺ 45°</button>
+        <button id="btn-rotate-right" class="ios-action-chip" aria-label="Rotar Derecha">45° ↻</button>
+        <button id="btn-flip" class="ios-action-chip" aria-label="Voltear">🌓 Voltear</button>
       </div>
     </main>
 
-    <!-- iOS Bottom Sheet Tray (Accessible Drawer for Kitten Pieces) -->
-    <footer class="ios-bottom-sheet" id="tray-container">
+    <!-- Bottom Sheet Tray (Kitten Pieces Drawer) -->
+    <footer class="ios-bottom-sheet" id="bottom-sheet" aria-label="Bandeja de gatitos">
       <div class="sheet-grabber"></div>
       <div class="sheet-header">
-        <span class="sheet-title">🐱 Gatitos por Encajar (<span id="tray-count">700</span>)</span>
-        <span class="sheet-hint">💡 Toca o arrastra una pieza</span>
+        <div class="sheet-title">
+          <span>🐱 Gatitos por Encajar (<span id="tray-count">700</span>)</span>
+        </div>
+        <div class="sheet-hint">💡 Toca o arrastra una pieza</div>
       </div>
-      <div class="sheet-scroll-area" id="tray-scroll-wrapper">
+
+      <div class="sheet-scroll-area" id="sheet-scroll-area">
         <div class="pieces-tray" id="pieces-tray" role="list">
-          <!-- Dynamic Image-Textured Previews will render here -->
+          <!-- Miniaturas generadas dinámicamente -->
         </div>
       </div>
-      <!-- iOS Home Bar Indicator -->
+      
+      <!-- iOS Home Indicator -->
       <div class="ios-home-bar"></div>
     </footer>
+
   </div>
 
-  <!-- On-Screen Gesture & Gameplay Instructions Modal -->
-  <div class="instructions-modal-overlay" id="instructions-modal" aria-modal="true" role="dialog">
+  <!-- Instructions & Gestures Modal -->
+  <div class="instructions-modal-overlay" id="instructions-modal">
     <div class="instructions-card">
       <div class="instructions-header">
-        <div class="instructions-badge">📖 Para Geraldine con Amor</div>
-        <h2 class="instructions-title">¿Cómo jugar? 🐾💖</h2>
+        <div class="instructions-badge">✨ Guía Táctil para Geraldine</div>
+        <h2 class="instructions-title">Cómo Armar el Mosaico 🐾💖</h2>
       </div>
 
       <div class="instructions-grid">
         <div class="guide-item">
           <div class="guide-icon-box">👆</div>
           <div class="guide-content">
-            <span class="guide-title">1. Seleccionar Gatito</span>
-            <p class="guide-desc">Toca cualquier gatito de la bandeja inferior para llevarlo al tablero.</p>
+            <div class="guide-title">Tocar y Arrastrar</div>
+            <div class="guide-desc">Toca cualquier gatito de la bandeja inferior para subirlo al tablero y muévelo hacia donde encaje.</div>
           </div>
         </div>
 
         <div class="guide-item">
           <div class="guide-icon-box">🔄</div>
           <div class="guide-content">
-            <span class="guide-title">2. Girar Pieza</span>
-            <p class="guide-desc">Toca <strong>2 veces rápido</strong> sobre la pieza o usa los botones <strong>↺ 45° / 45° ↻</strong>.</p>
-          </div>
-        </div>
-
-        <div class="guide-item">
-          <div class="guide-icon-box">🖐️</div>
-          <div class="guide-content">
-            <span class="guide-title">3. Arrastrar y Encajar</span>
-            <p class="guide-desc">Llévalo a su silueta. ¡La pieza <strong>queda fija</strong> y no se desarma!</p>
+            <div class="guide-title">Doble Toque para Girar</div>
+            <div class="guide-desc">Toca 2 veces rápido sobre un gatito o usa los botones para girarlo a 0° y que encaje perfecto.</div>
           </div>
         </div>
 
         <div class="guide-item">
           <div class="guide-icon-box">🤏</div>
           <div class="guide-content">
-            <span class="guide-title">4. Zoom (Pellizcar)</span>
-            <p class="guide-desc">Pellizca con <strong>2 dedos</strong> o usa los botones <strong>➕ / ➖</strong> para ver de cerca.</p>
-          </div>
-        </div>
-
-        <div class="guide-item">
-          <div class="guide-icon-box">✌️</div>
-          <div class="guide-content">
-            <span class="guide-title">5. Mover Tablero</span>
-            <p class="guide-desc">Arrastra con <strong>2 dedos sobre el fondo</strong> para navegar por las 700 piezas.</p>
+            <div class="guide-title">Zoom y Desplazamiento</div>
+            <div class="guide-desc">Pellizca con 2 dedos para hacer zoom o arrastra el fondo con 1 dedo para mover el tablero con fluidez.</div>
           </div>
         </div>
 
         <div class="guide-item">
           <div class="guide-icon-box">✨</div>
           <div class="guide-content">
-            <span class="guide-title">6. Pista Única & Guardado</span>
-            <p class="guide-desc">Usa <strong>✨ Pista</strong> (¡solo 1 uso!) y guarda con <strong>💾 Guardar</strong>.</p>
+            <div class="guide-title">Pista de Amor (1 Uso)</div>
+            <div class="guide-desc">Si no encuentras una pieza, el botón de pista te llevará directo a su lugar secreto.</div>
           </div>
         </div>
       </div>
 
-      <button id="btn-close-instructions" class="btn-start-playing" aria-label="Entendido, comenzar a jugar">
-        ¡Entendido, a jugar! 🐾💖
+      <button id="btn-close-instructions" class="btn-start-playing">
+        💖 ¡Comenzar a Jugar!
       </button>
     </div>
   </div>
 
-  <!-- Grand Finale Romantic Victory Overlay -->
-  <div class="cinematic-overlay" id="cinematic-overlay" aria-modal="true" role="dialog">
+  <!-- Victory Cinematic Overlay -->
+  <div class="cinematic-overlay" id="cinematic-overlay">
     <canvas id="cinematic-canvas"></canvas>
     
     <div class="victory-card" id="victory-card">
-      <div class="card-ornament">🐾 💖 🐾</div>
-      <h2 class="victory-title">¡Para Siempre Juntos!</h2>
-      <p class="victory-subtitle">El Gran Mosaico de 700 Gatitos está Completo</p>
+      <div class="card-ornament">💖 🐾 💖</div>
+      <h2 class="victory-title">¡Para Mi Amada Geraldine!</h2>
+      <p class="victory-subtitle">700 Latidos Entrelazados en la Eternidad</p>
       
       <div class="love-letter-parchment">
-        <div class="parchment-quote" id="parchment-quote">
-          "Para mi amada Geraldine: Setecientos latidos, infinitas galaxias y un solo destino... Entre millones de estrellas en el universo, mis ojos siempre buscarán los tuyos. Eres mi amor eterno, mi paz, mi inspiración y mi mayor felicidad en este mundo. Te amo con toda mi alma por siempre, mi niña hermosa."
-        </div>
-        <div class="dedication-box">
-          <label for="dedication-name">Dedicatoria de amor infinito:</label>
-          <input type="text" id="dedication-name" value="Geraldine" placeholder="Geraldine..." maxlength="35" aria-label="Nombre para dedicatoria">
-        </div>
+        <p class="parchment-quote" id="victory-poem-text">
+          "Para mi amada Geraldine: Setecientos latidos, infinitas galaxias y un solo destino... Eres mi amor eterno, mi paz y mi mayor felicidad. Te amo con toda mi alma por siempre."
+        </p>
+      </div>
+
+      <div class="dedication-box">
+        <label for="dedication-name">Con todo mi amor para:</label>
+        <input type="text" id="dedication-name" value="Geraldine" readonly>
       </div>
 
       <div class="victory-actions">
-        <button id="btn-save-card" class="btn-romantic-primary">💌 Descargar Postal de Recuerdo para Geraldine</button>
-        <button id="btn-replay" class="btn-romantic-secondary">🔄 Jugar de Nuevo</button>
+        <button id="btn-download-card" class="btn-romantic-primary">
+          💌 Descargar Postal de Recuerdo
+        </button>
+        <button id="btn-replay" class="btn-romantic-secondary">
+          ✨ Volver a Armar el Mosaico
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Desktop Quick Frame Toggle (Only for desktop preview testing) -->
-  <div class="desktop-controls">
-    <button id="btn-toggle-frame" class="btn-mini" title="Alternar Vista Móvil">📱 Modo iPhone</button>
-    <button id="btn-solve-now" class="btn-mini" title="Demostración">⚡ Resolver (Demo)</button>
-  </div>
+  <!-- Desktop Controls (Hidden on Mobile) -->
+  <aside class="desktop-controls" aria-label="Controles de depuración">
+    <button id="btn-toggle-frame" class="btn-mini">📱 Modo iPhone</button>
+    <button id="btn-solve-now" class="btn-mini">⚡ Resolver (Demo)</button>
+  </aside>
 
   <!-- Scripts -->
   <script src="js/preloader3d.js"></script>
   <script src="js/pieces.js"></script>
   <script src="js/audio.js"></script>
   <script src="js/particles.js"></script>
-  <script src="js/puzzle.js"></script>
   <script src="js/cinematic.js"></script>
+  <script src="js/puzzle.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
